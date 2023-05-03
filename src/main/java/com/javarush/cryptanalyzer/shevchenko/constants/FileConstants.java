@@ -1,8 +1,7 @@
 package com.javarush.cryptanalyzer.shevchenko.constants;
 
 public class FileConstants {
-
-    public static final String INPUT = "input.txt";
-    public static final String OUTPUT = "output.txt";
-    public static final String ENCODED = "encoded.txt";
+    public static final String INPUT_TXT = "input.txt";
+    public static final String OUTPUT_TXT = "output.txt";
+    public static final String ENCODED_TXT = "encoded.txt";
 }
