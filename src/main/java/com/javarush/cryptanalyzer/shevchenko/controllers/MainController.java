@@ -1,9 +1,7 @@
 package com.javarush.cryptanalyzer.shevchenko.controllers;
 
 
-import com.javarush.cryptanalyzer.shevchenko.services.CipherService;
 
-import java.util.Scanner;
 
 public class MainController {
 

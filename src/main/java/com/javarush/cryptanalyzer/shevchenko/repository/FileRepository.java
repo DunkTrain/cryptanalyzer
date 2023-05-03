@@ -1,7 +1,6 @@
 package com.javarush.cryptanalyzer.shevchenko.repository;
 
-import com.javarush.cryptanalyzer.shevchenko.constants.Alphabet;
-import com.javarush.cryptanalyzer.shevchenko.entity.CaesarCipher;
+
 
 import java.io.*;
 
