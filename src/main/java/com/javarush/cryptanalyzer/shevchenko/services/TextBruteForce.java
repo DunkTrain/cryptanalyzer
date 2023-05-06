@@ -2,13 +2,11 @@ package com.javarush.cryptanalyzer.shevchenko.services;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import static com.javarush.cryptanalyzer.shevchenko.constants.CryptoAlphabet.*;
-
 
 public class TextBruteForce extends TextDecoder {
 
-    private static final String regex = "^([а-яА-Я-]+(\\s|,\\s|:\\s|;\\s)){2,}";
+    private static final String regex = "^([а-яА-Я]+(\\s|,\\s|:\\s|;\\s|-\\s)){2,}";
     private static final Pattern pattern = Pattern.compile(regex);
 
     public static String bruteForce(String textInput) {
@@ -23,4 +21,5 @@ public class TextBruteForce extends TextDecoder {
         }
         return textOutput.toString();
     }
+
 }

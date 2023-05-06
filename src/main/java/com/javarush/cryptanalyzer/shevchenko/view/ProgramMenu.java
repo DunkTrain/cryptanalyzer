@@ -6,10 +6,9 @@ import static com.javarush.cryptanalyzer.shevchenko.view.ShowBruteForceMenu.brut
 import static com.javarush.cryptanalyzer.shevchenko.view.ShowDecodeMenu.decodeMenu;
 import static com.javarush.cryptanalyzer.shevchenko.view.ShowEncodeMenu.encodeMenu;
 
-public class MainMenu {
+public class ProgramMenu {
 
-    //      Главное меню
-    public static void mainMenu() {
+    public static void programMenu() {
 
         welcome();
 
@@ -22,9 +21,7 @@ public class MainMenu {
         }
     }
 
-    //      Приветствие
     public static void welcome() {
-        System.out.println("Welcome to \"Caesar Cipher\".");
-        System.out.println("This program encrypts and decrypts text using the Caesar cipher algorithm.");
+        System.out.println(DESCRIPTION);
     }
 }

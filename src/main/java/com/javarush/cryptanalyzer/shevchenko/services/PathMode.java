@@ -1,7 +1,6 @@
 package com.javarush.cryptanalyzer.shevchenko.services;
 
 import java.util.Scanner;
-
 import static com.javarush.cryptanalyzer.shevchenko.constants.DefaultPath.*;
 
 

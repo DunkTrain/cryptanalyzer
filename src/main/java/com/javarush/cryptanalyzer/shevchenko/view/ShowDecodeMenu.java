@@ -1,9 +1,7 @@
 package com.javarush.cryptanalyzer.shevchenko.view;
 
 import com.javarush.cryptanalyzer.shevchenko.exception.TextDecoderException;
-
 import java.io.*;
-
 import static com.javarush.cryptanalyzer.shevchenko.constants.EncryptionTextConstants.*;
 import static com.javarush.cryptanalyzer.shevchenko.services.TextDecoder.decrypt;
 import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.*;
