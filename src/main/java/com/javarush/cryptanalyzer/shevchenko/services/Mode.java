@@ -2,6 +2,7 @@ package com.javarush.cryptanalyzer.shevchenko.services;
 
 import java.util.Random;
 import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.in;
+
 public class Mode {
     public static String generateRandomKey() {
         Random random = new Random();
