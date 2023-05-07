@@ -8,20 +8,20 @@ import static com.javarush.cryptanalyzer.shevchenko.view.ShowEncodeMenu.encodeMe
 
 public class ProgramMenu {
 
-    public static void programMenu() {
+    public static void presentProgramMenu() {
 
-        welcome();
+        selectInputMode();
 
-        int process = getInputMode(ENTER_MODE);
+        int start = getInputMode(ENTER_MODE);
 
-        switch (process) {
+        switch (start) {
             case 1 -> encodeMenu();
             case 2 -> decodeMenu();
             case 3 -> bruteForceMenu();
         }
     }
 
-    public static void welcome() {
+    public static void selectInputMode() {
         System.out.println(DESCRIPTION);
     }
 }
