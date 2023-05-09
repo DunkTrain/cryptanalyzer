@@ -6,7 +6,7 @@ import static com.javarush.cryptanalyzer.shevchenko.constants.CryptoAlphabet.*;
 
 public class TextBruteForce extends TextDecoder {
 
-    private static final String REGEX = "^([а-яА-Я]+(\\s|,\\s|:\\s|;\\s|-\\s)){2,}";
+    private static final String REGEX = "([а-яА-Я]+(\\s|,\\s|:\\s|;\\s|-\\s)){2,}";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     public static String bruteForce(String textInput) {
