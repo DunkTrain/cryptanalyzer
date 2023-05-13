@@ -1,26 +1,26 @@
 package com.javarush.cryptanalyzer.shevchenko.view;
 
 import com.javarush.cryptanalyzer.shevchenko.exception.TextDecoderException;
-
+import com.javarush.cryptanalyzer.shevchenko.services.TextBruteForce;
 import java.io.*;
-
 import static com.javarush.cryptanalyzer.shevchenko.constants.EncryptionTextConstants.*;
 import static com.javarush.cryptanalyzer.shevchenko.services.TextBruteForce.bruteForce;
 import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.*;
 
 public class ShowBruteForceMenu {
-
-    public static void bruteForceMenu(){
+    public static void bruteForceMenu() {
 
         String pathInput = getInputFilePathDecode(ENTER_INPUT_DECODE_FILEPATH);
         String pathOutputDecode = getOutputFilePathDecode(ENTER_OUTPUT_DECODE_FILEPATH);
-
         File reader = new File(pathInput);
         File writer = new File(pathOutputDecode);
+
+        String decryptedText;
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(reader)));
-             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(writer)))){
+             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(writer)))) {
             while (bufferedReader.ready()) {
-                bufferedWriter.write(bruteForce(bufferedReader.readLine()));
+                decryptedText = bruteForce(bufferedReader.readLine());
+                bufferedWriter.write(decryptedText);
                 bufferedWriter.newLine();
             }
         } catch (IOException e) {
@@ -28,5 +28,6 @@ public class ShowBruteForceMenu {
         }
 
         System.out.printf("Decrypted text saved in the file %s.%n", pathOutputDecode);
+        System.out.printf("Key used for decryption: %d%n", TextBruteForce.getKey());
     }
 }

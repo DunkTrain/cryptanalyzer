@@ -8,7 +8,7 @@ public class TextBruteForce extends TextDecoder {
 
     private static final String REGEX = "^([а-яА-Я]+(\\s|,\\s|:\\s|;\\s|-\\s)){2,}";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
-
+    private static int key;
     public static String bruteForce(String textInput) {
         StringBuilder textOutput = new StringBuilder();
         for (int i = 0; i < LENGTH_ALPHABET; i++) {
@@ -16,10 +16,14 @@ public class TextBruteForce extends TextDecoder {
             textOutput.append(decrypt(textInput, i));
             Matcher matcher = PATTERN.matcher(textOutput);
             if (matcher.find()) {
+                key = i;
                 break;
             }
         }
         return textOutput.toString();
+    }
+    public static int getKey() {
+        return key;
     }
 
 }
