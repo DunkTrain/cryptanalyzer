@@ -7,10 +7,12 @@ import java.io.*;
 import static com.javarush.cryptanalyzer.shevchenko.constants.EncryptionTextConstants.*;
 import static com.javarush.cryptanalyzer.shevchenko.services.TextBruteForce.bruteForce;
 import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.*;
+import static com.javarush.cryptanalyzer.shevchenko.services.Mode.getInputKey;
 
 public class ShowBruteForceMenu {
 
     public static void bruteForceMenu(){
+        int key = getInputKey(ENTER_KEY);
 
         String pathInput = getInputFilePathDecode(ENTER_INPUT_DECODE_FILEPATH);
         String pathOutputDecode = getOutputFilePathDecode(ENTER_OUTPUT_DECODE_FILEPATH);
@@ -27,6 +29,6 @@ public class ShowBruteForceMenu {
             throw new TextDecoderException("Error while decoding text using brute force method", e);
         }
 
-        System.out.printf("Decrypted text saved in the file %s.%n", pathOutputDecode);
+        System.out.printf("Decrypted text saved in the file %s with key %d.%n", pathOutputDecode, key);
     }
 }
