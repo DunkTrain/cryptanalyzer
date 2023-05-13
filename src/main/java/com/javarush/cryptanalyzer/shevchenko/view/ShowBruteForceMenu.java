@@ -15,12 +15,10 @@ public class ShowBruteForceMenu {
         File reader = new File(pathInput);
         File writer = new File(pathOutputDecode);
 
-        String decryptedText;
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(reader)));
              BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(writer)))) {
             while (bufferedReader.ready()) {
-                decryptedText = bruteForce(bufferedReader.readLine());
-                bufferedWriter.write(decryptedText);
+                bufferedWriter.write(bruteForce(bufferedReader.readLine()));
                 bufferedWriter.newLine();
             }
         } catch (IOException e) {
