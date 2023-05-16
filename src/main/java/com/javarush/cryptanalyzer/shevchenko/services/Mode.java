@@ -1,12 +1,14 @@
 package com.javarush.cryptanalyzer.shevchenko.services;
 
-import java.util.Random;
+
+import static com.javarush.cryptanalyzer.shevchenko.constants.CryptoAlphabet.ALPHABET;
+import static com.javarush.cryptanalyzer.shevchenko.constants.CryptoAlphabet.LENGTH_ALPHABET;
 import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.in;
 
 public class Mode {
     public static String generateRandomKey() {
-        Random random = new Random();
-        return String.valueOf(random.nextInt(33) + 1);
+        int random = (int) (1 + Math.random() * ALPHABET.length() - 1);
+        return String.valueOf(random);
     }
     public static int getInputMode(String message) {
         String input;
@@ -28,10 +30,10 @@ public class Mode {
             if (input.equals("")) {
                 input = generateRandomKey();
                 return Integer.parseInt(input);
-            } else if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= 33) {
+            } else if (Integer.parseInt(input) >= 1 && Integer.parseInt(input) <= LENGTH_ALPHABET) {
                 return Integer.parseInt(input);
             } else {
-                System.out.println("You can only input numbers from 1 to 33.");
+                System.out.printf("You can only input numbers from 1 to %d. \n", LENGTH_ALPHABET);
             }
         }
     }

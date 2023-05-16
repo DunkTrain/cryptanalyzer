@@ -6,6 +6,7 @@ import static com.javarush.cryptanalyzer.shevchenko.view.ProgramMenu.presentProg
 public class EntryPoint {
     public static void main(String[] args) {
 
+        // START
         presentProgramMenu();
 
     }
