@@ -4,7 +4,6 @@ public abstract class EncryptionTextConstants {
 
     public static final String ENTER_KEY = """
             Enter the encryption key:
-            The key must be an integer from 1 to 33.
             Press Enter to use default key.""";
     public static final String ENTER_INPUT_ENCODE_FILEPATH = """
             Enter the file path to encode:
