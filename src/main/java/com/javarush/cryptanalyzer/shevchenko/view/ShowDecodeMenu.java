@@ -1,11 +1,12 @@
 package com.javarush.cryptanalyzer.shevchenko.view;
 
-import com.javarush.cryptanalyzer.shevchenko.exception.TextDecoderException;
 import java.io.*;
-import static com.javarush.cryptanalyzer.shevchenko.constants.EncryptionTextConstants.*;
-import static com.javarush.cryptanalyzer.shevchenko.services.TextDecoder.decrypt;
+import com.javarush.cryptanalyzer.shevchenko.exception.TextDecoderException;
+
 import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.*;
 import static com.javarush.cryptanalyzer.shevchenko.services.Mode.getInputKey;
+import static com.javarush.cryptanalyzer.shevchenko.services.TextDecoder.decrypt;
+import static com.javarush.cryptanalyzer.shevchenko.constants.EncryptionTextConstants.*;
 
 public class ShowDecodeMenu {
     public static void decodeMenu(){

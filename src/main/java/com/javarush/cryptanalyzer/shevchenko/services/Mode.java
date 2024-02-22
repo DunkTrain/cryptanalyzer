@@ -1,9 +1,8 @@
 package com.javarush.cryptanalyzer.shevchenko.services;
 
-
+import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.in;
 import static com.javarush.cryptanalyzer.shevchenko.constants.CryptoAlphabet.ALPHABET;
 import static com.javarush.cryptanalyzer.shevchenko.constants.CryptoAlphabet.LENGTH_ALPHABET;
-import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.in;
 
 public class Mode {
     public static String generateRandomKey() {

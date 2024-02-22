@@ -1,6 +1,5 @@
 package com.javarush.cryptanalyzer.shevchenko.services;
 
-
 import static com.javarush.cryptanalyzer.shevchenko.constants.CryptoAlphabet.*;
 
 public class TextEncoder {
@@ -19,7 +18,6 @@ public class TextEncoder {
             return symbol;
         }
     }
-
 }
 
 

@@ -1,11 +1,12 @@
 package com.javarush.cryptanalyzer.shevchenko.view;
 
-import com.javarush.cryptanalyzer.shevchenko.exception.TextDecoderException;
-import com.javarush.cryptanalyzer.shevchenko.services.TextBruteForce;
 import java.io.*;
+import com.javarush.cryptanalyzer.shevchenko.services.TextBruteForce;
+import com.javarush.cryptanalyzer.shevchenko.exception.TextDecoderException;
+
+import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.*;
 import static com.javarush.cryptanalyzer.shevchenko.constants.EncryptionTextConstants.*;
 import static com.javarush.cryptanalyzer.shevchenko.services.TextBruteForce.bruteForce;
-import static com.javarush.cryptanalyzer.shevchenko.services.PathMode.*;
 
 public class ShowBruteForceMenu {
     public static void bruteForceMenu() {

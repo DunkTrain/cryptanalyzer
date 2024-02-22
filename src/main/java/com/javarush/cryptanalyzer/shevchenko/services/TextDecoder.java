@@ -12,11 +12,12 @@ public class TextDecoder {
         return plaintext.toString();
     }
 
-    public static char leftOffset(char symbol, int key) {
+        public static char leftOffset(char symbol, int key) {
         if (ALPHABET.indexOf(symbol) != -1) {
             return ALPHABET.charAt((ALPHABET.indexOf(symbol) + LENGTH_ALPHABET - key) % LENGTH_ALPHABET);
         } else {
             return symbol;
         }
     }
+
 }
