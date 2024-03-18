@@ -1,4 +1,4 @@
-## Cryptanalyzer
+## Cryptanalyzer (EU)
 
 Cryptanalyzer is a Java application for encrypting and decrypting text using the Caesar cipher algorithm.
 
@@ -11,7 +11,7 @@ Cryptanalyzer is a Java application for encrypting and decrypting text using the
 
 ---
 
-## Cryptanalyzer - RU
+## Cryptanalyzer (RU)
 
 Cryptanalyzer - это приложение на Java для шифрования и дешифрования текста с использованием алгоритма Цезаря.
 
