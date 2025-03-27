@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.layout.HBox?>
+<VBox alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.javarush.cryptanalyzer.shevchenko.controllers.MainController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Криптоанализатор" style="-fx-font-size: 18px;"/>
+
+    <TextArea fx:id="inputTextArea" promptText="Введите текст или загрузите файл" VBox.vgrow="ALWAYS"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <TextField fx:id="keyField" promptText="Ключ шифрования" HBox.hgrow="ALWAYS"/>
+        <Button text="Выбрать файл" onAction="#selectInputFile"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="encodeButton" text="Зашифровать" onAction="#handleEncode"/>
+        <Button fx:id="decodeButton" text="Расшифровать" onAction="#handleDecode"/>
+        <Button fx:id="bruteForceButton" text="Брут-форс" onAction="#handleBruteForce"/>
+    </HBox>
+
+    <TextArea fx:id="outputTextArea" promptText="Результат" VBox.vgrow="ALWAYS" editable="false"/>
+</VBox>
