@@ -8,22 +8,22 @@ public final class CryptoAlphabet {
     /**
      * Строка с заглавными буквами русского алфавита.
      */
-    private static final String LETTERS_UPPER_CASE = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
+    public static final String LETTERS_UPPER_CASE = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ";
 
     /**
      * Строка со строчными буквами русского алфавита.
      */
-    private static final String LETTERS_LOWER_CASE = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+    public static final String LETTERS_LOWER_CASE = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
 
     /**
      * Строка с цифрами.
      */
-    private static final String NUMBERS = "0123456789";
+    public static final String NUMBERS = "0123456789";
 
     /**
      * Строка со специальными символами.
      */
-    private static final String SYMBOLS = ".,\":-!? ";
+    public static final String SYMBOLS = ".,\":-!? ";
 
     /**
      * Полный криптографический алфавит (все символы объединены).

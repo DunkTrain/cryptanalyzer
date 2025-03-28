@@ -1,0 +1,54 @@
+.root {
+    -fx-background-color: #EDEDED;
+    -fx-padding: 20px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #444;
+}
+
+.text-field, .text-area {
+    -fx-background-color: white;
+    -fx-border-color: #A1A1A1;
+    -fx-border-radius: 8px;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.text-field {
+    -fx-prompt-text-fill: #888888; /* Серый нейтральный цвет для подсказки */
+}
+
+.text-area {
+    -fx-pref-height: 120px;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #0078D7, #005A9E);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 2, 2);
+}
+
+.button:hover {
+    -fx-background-color: #005A9E;
+}
+
+.result-area {
+    -fx-border-color: #0078D7;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-color: #FAFAFA;
+}
+
+.hint-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #666;
+    -fx-font-style: italic;
+}
