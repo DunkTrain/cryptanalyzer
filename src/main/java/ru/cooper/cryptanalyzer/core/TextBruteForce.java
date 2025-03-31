@@ -1,7 +1,7 @@
-package com.javarush.cryptanalyzer.shevchenko.services;
+package ru.cooper.cryptanalyzer.core;
 
-import com.javarush.cryptanalyzer.shevchenko.constants.CryptoAlphabet;
-import com.javarush.cryptanalyzer.shevchenko.constants.Dictionary;
+import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
+import ru.cooper.cryptanalyzer.util.Dictionary;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +19,8 @@ public class TextBruteForce extends TextDecoder {
     private static final double STRUCTURE_WEIGHT = 3.0;
     private static final double FREQUENCY_WEIGHT = 10.0;
     private static final double DICTIONARY_WEIGHT = 7.0;
+    private static final double LENGTH_WEIGHT = 2.0;
+    private static final double MIN_TEXT_LENGTH = 10;
 
     /** Статистика частоты букв в русском языке. */
     private static final Map<Character, Double> RUSSIAN_LETTER_FREQUENCY = createFrequencyMap();
@@ -26,6 +28,10 @@ public class TextBruteForce extends TextDecoder {
     /** Регулярное выражение для проверки структуры осмысленного текста. */
     private static final String MEANINGFUL_TEXT_REGEX = "^\\W*[а-яА-Я]+([\\s,.:;-]+[а-яА-Я]+)*";
     private static final Pattern MEANINGFUL_PATTERN = Pattern.compile(MEANINGFUL_TEXT_REGEX);
+
+    /** Регулярное выражение для проверки наличия пробелов между словами. */
+    private static final String SPACES_PATTERN_REGEX = "\\b[а-яА-Я]{2,}\\s+[а-яА-Я]{2,}\\b";
+    private static final Pattern SPACES_PATTERN = Pattern.compile(SPACES_PATTERN_REGEX);
 
     private static Map<Character, Double> createFrequencyMap() {
         Map<Character, Double> frequencyMap = new HashMap<>();
@@ -55,6 +61,16 @@ public class TextBruteForce extends TextDecoder {
      * @return результат с наилучшим вариантом расшифровки
      */
     public static BruteForceResult bruteForce(String encryptedText) {
+        if (encryptedText == null || encryptedText.isEmpty()) {
+            return new BruteForceResult("", 0, 0.0);
+        }
+
+        if (encryptedText.length() < MIN_TEXT_LENGTH) {
+            throw new IllegalArgumentException(
+                    "Текст слишком короткий для надежного взлома. Минимальная длина: " + MIN_TEXT_LENGTH
+            );
+        }
+
         BruteForceResult bestResult = new BruteForceResult();
         double bestScore = Double.NEGATIVE_INFINITY;
 
@@ -68,6 +84,16 @@ public class TextBruteForce extends TextDecoder {
             }
         }
 
+        // Если уверенность слишком низкая, возвращаем предупреждение
+        if (bestResult.getConfidenceScore() < 0.3) {
+            bestResult = new BruteForceResult(
+                    bestResult.getDecryptedText(),
+                    bestResult.getKey(),
+                    bestResult.getConfidenceScore(),
+                    "Низкая уверенность в результате. Возможно, текст зашифрован другим методом или содержит нестандартные символы."
+            );
+        }
+
         return bestResult;
     }
 
@@ -79,11 +105,25 @@ public class TextBruteForce extends TextDecoder {
      */
     private static double calculateTextQuality(String text) {
         String trimmedText = text.trim();
+
+        if (trimmedText.length() < MIN_TEXT_LENGTH) {
+            return 0.0;
+        }
+
         Matcher matcher = MEANINGFUL_PATTERN.matcher(trimmedText);
         double structureScore = matcher.matches() ? STRUCTURE_WEIGHT : 0.0;
+
+        Matcher spacesMatcher = SPACES_PATTERN.matcher(trimmedText);
+        if (spacesMatcher.find()) {
+            structureScore += 1.0;
+        }
+
         double frequencyScore = analyzeLetterFrequency(trimmedText);
         double dictionaryScore = analyzeDictionaryMatch(trimmedText);
-        double lengthScore = Math.min(trimmedText.replaceAll("[^а-яА-Я]", "").length() / 10.0, 5.0);
+
+
+        int russianLetterCount = trimmedText.replaceAll("[^а-яА-Я]", "").length();
+        double lengthScore = Math.min(russianLetterCount / 20.0, 5.0) * LENGTH_WEIGHT;
 
         return structureScore + frequencyScore + dictionaryScore + lengthScore;
     }
@@ -99,7 +139,7 @@ public class TextBruteForce extends TextDecoder {
         int totalLetters = 0;
 
         for (char c : text.toLowerCase().toCharArray()) {
-            if (Character.isLetter(c)) {
+            if (Character.isLetter(c) && CryptoAlphabet.LETTERS_LOWER_CASE.indexOf(c) != -1) {
                 letterCount.put(c, letterCount.getOrDefault(c, 0) + 1);
                 totalLetters++;
             }
@@ -132,7 +172,9 @@ public class TextBruteForce extends TextDecoder {
         if (words.length == 0) return 0.0;
 
         int matches = 0;
-        Set<String> shortWords = Set.of("я", "ты", "он", "мы", "вы", "и", "а", "но", "в", "на", "с", "по", "за", "из", "от", "до", "да", "нет");
+        Set<String> shortWords = Set.of(
+                "я", "ты", "он", "мы", "вы", "и", "а", "но", "в", "на", "с", "по", "за", "из", "от", "до", "да", "нет"
+        );
 
         for (String word : words) {
             if (word.length() > 2 && Dictionary.COMMON_RUSSIAN_WORDS.contains(word)) {
@@ -150,26 +192,26 @@ public class TextBruteForce extends TextDecoder {
      * Содержит результаты расшифровки методом brute-force.
      */
     public static class BruteForceResult {
+
         private final String decryptedText;
         private final int key;
         private final double confidenceScore;
+        private final String message;
 
         /** Создает пустой результат. */
         public BruteForceResult() {
             this("", 0, 0.0);
         }
 
-        /**
-         * Создает результат с указанными параметрами.
-         *
-         * @param decryptedText расшифрованный текст
-         * @param key использованный ключ
-         * @param confidenceScore оценка достоверности
-         */
         public BruteForceResult(String decryptedText, int key, double confidenceScore) {
+            this(decryptedText, key, confidenceScore, "");
+        }
+
+        public BruteForceResult(String decryptedText, int key, double confidenceScore, String message) {
             this.decryptedText = decryptedText;
             this.key = key;
             this.confidenceScore = confidenceScore;
+            this.message = message;
         }
 
         public String getDecryptedText() {
@@ -184,10 +226,22 @@ public class TextBruteForce extends TextDecoder {
             return confidenceScore;
         }
 
+        public String getMessage() {
+            return message;
+        }
+
+        public boolean hasMessage() {
+            return message != null && !message.isEmpty();
+        }
+
         @Override
         public String toString() {
-            return String.format("Расшифрованный текст (ключ %d, уверенность %.2f%%): %s",
+            String result = String.format("Расшифрованный текст (ключ %d, уверенность %.2f%%): %s",
                     key, confidenceScore * 10, decryptedText);
+            if (hasMessage()) {
+                result += "\nСообщение: " + message;
+            }
+            return result;
         }
     }
 }

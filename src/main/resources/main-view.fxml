@@ -8,7 +8,7 @@
 
 <?import java.net.URL?>
 <VBox alignment="CENTER" spacing="15" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.javarush.cryptanalyzer.shevchenko.controllers.MainController">
+      fx:controller="ru.cooper.cryptanalyzer.controllers.ui.MainController">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
@@ -36,18 +36,28 @@
         <Button fx:id="encodeButton" text="🔒 Зашифровать" onAction="#handleEncode"/>
         <Button fx:id="decodeButton" text="🔓 Расшифровать" onAction="#handleDecode"/>
         <Button fx:id="bruteForceButton" text="🔓 Брут-форс" onAction="#handleBruteForce"/>
+        <Button text="🗑️ Очистить" onAction="#clearAllFields"/>
+        <Button text="❓ Справка" onAction="#showHelp"/>
     </HBox>
+
+    <!-- Индикатор прогресса -->
+    <ProgressBar fx:id="progressBar" prefWidth="Infinity" visible="false" progress="-1.0"/>
 
     <!-- Поле вывода -->
     <Label text="Результат:" style="-fx-font-weight: bold;"/>
     <HBox spacing="10" alignment="CENTER">
-        <TextArea fx:id="outputTextArea" promptText="Результат обработки" VBox.vgrow="ALWAYS" editable="false" minHeight="100"/>
-        <Button text="➡" onAction="#copyOutputToInput"/>
+        <TextArea fx:id="outputTextArea" promptText="Результат обработки" VBox.vgrow="ALWAYS" editable="false" minHeight="100" HBox.hgrow="ALWAYS"/>
+        <VBox spacing="5" alignment="CENTER">
+            <Button text="➡" onAction="#copyOutputToInput" minWidth="40"/>
+            <Button text="💾" onAction="#saveOutputFile" minWidth="40"/>
+        </VBox>
     </HBox>
 
-    <!-- Подсказка -->
-    <Label fx:id="hintLabel" text="" style="-fx-font-size: 12px; -fx-text-fill: red;"/>
-
+    <!-- Подсказка и статус -->
+    <HBox spacing="10" alignment="CENTER">
+        <Label fx:id="hintLabel" text="" style="-fx-font-size: 12px; -fx-text-fill: #666666;" HBox.hgrow="ALWAYS"/>
+        <Label fx:id="statusLabel" text="" style="-fx-font-size: 12px;"/>
+    </HBox>
 
     <stylesheets>
         <URL value="@css/style.css"/>

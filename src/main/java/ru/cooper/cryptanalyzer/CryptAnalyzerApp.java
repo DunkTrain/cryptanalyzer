@@ -1,4 +1,4 @@
-package com.javarush.cryptanalyzer.shevchenko;
+package ru.cooper.cryptanalyzer;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +19,7 @@ public class CryptAnalyzerApp extends Application {
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/main-view.fxml")));
 
             primaryStage.setTitle("Криптоанализатор");
-            primaryStage.setScene(new Scene(root, 800, 600));
+            primaryStage.setScene(new Scene(root, 1000, 800));
 
             Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon.png")));
             primaryStage.getIcons().add(icon);
