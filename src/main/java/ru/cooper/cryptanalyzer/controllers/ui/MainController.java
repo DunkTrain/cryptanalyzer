@@ -1,187 +1,171 @@
 package ru.cooper.cryptanalyzer.controllers.ui;
 
 import javafx.concurrent.Task;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
-import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
-import ru.cooper.cryptanalyzer.core.TextBruteForce;
-import ru.cooper.cryptanalyzer.core.TextDecoder;
-import ru.cooper.cryptanalyzer.core.TextEncoder;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import ru.cooper.cryptanalyzer.controllers.ui.helpers.AlertHelper;
+import ru.cooper.cryptanalyzer.controllers.ui.helpers.FileHelper;
+import ru.cooper.cryptanalyzer.controllers.ui.tasks.BruteForceTask;
+import ru.cooper.cryptanalyzer.controllers.ui.tasks.DecodeTask;
+import ru.cooper.cryptanalyzer.controllers.ui.tasks.EncodeTask;
+import ru.cooper.cryptanalyzer.controllers.ui.validators.KeyValidator;
+import ru.cooper.cryptanalyzer.core.TextBruteForce;
+import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Random;
 
 /**
- * Контроллер для основного окна приложения.
- * Обрабатывает пользовательский ввод и управляет шифрованием/дешифрованием текста.
+ * Контроллер основного окна приложения.
+ * Управляет логикой шифрования, дешифрования и взлома текста методом Цезаря.
  */
 public class MainController {
 
-    @FXML private TextField keyField;
-    @FXML private TextArea inputTextArea;
-    @FXML private TextArea outputTextArea;
-    @FXML private Label hintLabel;
-    @FXML private Button encodeButton;
-    @FXML private Button decodeButton;
-    @FXML private Button bruteForceButton;
-    @FXML private Label statusLabel;
-    @FXML private ProgressBar progressBar;
+    @FXML
+    private TextField keyField;
+
+    @FXML
+    private TextArea inputTextArea;
+
+    @FXML
+    private TextArea outputTextArea;
+
+    @FXML
+    private Label hintLabel;
+
+    @FXML
+    private Button encodeButton;
+
+    @FXML
+    private Button decodeButton;
+
+    @FXML
+    private Button bruteForceButton;
+
+    @FXML
+    private Label statusLabel;
+
+    @FXML
+    private ProgressBar progressBar;
 
     private static final Random RANDOM = new Random();
     private static final int MAX_KEY_VALUE = CryptoAlphabet.LENGTH_ALPHABET - 1;
     private static final String KEY_RANGE_PROMPT = "Ключ от 1 до " + MAX_KEY_VALUE;
 
+    private final KeyValidator keyValidator;
+    private final FileHelper fileHelper;
+    private final AlertHelper alertHelper;
+
     /**
-     * Инициализирует контроллер после загрузки FXML.
-     * Настраивает валидацию поля ключа и подсказки.
+     * Конструктор контроллера.
+     * Инициализирует валидатор ключа, помощник для работы с файлами и уведомлениями.
+     */
+    public MainController() {
+        this.keyValidator = new KeyValidator(MAX_KEY_VALUE);
+        this.fileHelper = new FileHelper();
+        this.alertHelper = new AlertHelper();
+    }
+
+    /**
+     * Инициализация JavaFX-компонентов после загрузки FXML.
+     * Настраивает подсказки, стили и валидацию полей.
      */
     @FXML
     private void initialize() {
-        configureKeyFieldValidation();
-        setupHintLabel();
-        setupStatusLabel();
+        setupUIComponents();
+        setupEventHandlers();
+    }
+
+    private void setupUIComponents() {
+        hintLabel.setText(
+                "Используйте стрелку, чтобы перенести зашифрованный текст в поле ввода для дальнейшей обработки"
+        );
+        hintLabel.getStyleClass().add("hint-label");
+
+        statusLabel.setText("");
+        statusLabel.getStyleClass().add("status-label");
+
         keyField.setPromptText(KEY_RANGE_PROMPT);
 
-        // Добавляем обработчики событий для текстовых полей
+        encodeButton.setDisable(true);
+        decodeButton.setDisable(true);
+        bruteForceButton.setDisable(true);
+
+        progressBar.setVisible(false);
+    }
+
+    private void setupEventHandlers() {
+        keyField.textProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                keyValidator.validate(newValue, oldValue);
+                showStatus("", false);
+            } catch (IllegalArgumentException e) {
+                keyField.setText(oldValue);
+                showStatus(e.getMessage(), true);
+            }
+        });
+
         inputTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
             boolean hasText = !newValue.trim().isEmpty();
             encodeButton.setDisable(!hasText);
             decodeButton.setDisable(!hasText);
             bruteForceButton.setDisable(!hasText);
         });
-
-        // Инициализируем состояние кнопок
-        encodeButton.setDisable(true);
-        decodeButton.setDisable(true);
-        bruteForceButton.setDisable(true);
-
-        // Инициализируем прогресс-бар
-        progressBar.setVisible(false);
     }
 
-    private void configureKeyFieldValidation() {
-        keyField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                keyField.setText(oldValue);
-                return;
-            }
-
-            if (!newValue.isEmpty()) {
-                validateKeyRange(newValue, oldValue);
-            }
-        });
-    }
-
-    private void validateKeyRange(String newValue, String oldValue) {
-        try {
-            int value = Integer.parseInt(newValue);
-            if (value < 1 || value > MAX_KEY_VALUE) {
-                keyField.setText(oldValue);
-                showStatus("Ключ должен быть числом от 1 до " + MAX_KEY_VALUE, true);
-            } else {
-                showStatus("", false);
-            }
-        } catch (NumberFormatException e) {
-            keyField.setText(oldValue);
-        }
-    }
-
-    private void setupHintLabel() {
-        hintLabel.setText(
-                "Используйте стрелку, чтобы перенести зашифрованный текст в поле ввода для дальнейшей обработки"
-        );
-        hintLabel.getStyleClass().add("hint-label");
-    }
-
-    private void setupStatusLabel() {
-        statusLabel.setText("");
-        statusLabel.getStyleClass().add("status-label");
-    }
-
-    private void showStatus(String message, boolean isError) {
-        statusLabel.setText(message);
-
-        if (isError) {
-            statusLabel.getStyleClass().removeAll("status-success");
-            statusLabel.getStyleClass().add("status-error");
-        } else if (!message.isEmpty()) {
-            statusLabel.getStyleClass().removeAll("status-error");
-            statusLabel.getStyleClass().add("status-success");
-        }
-    }
-
+    /**
+     * Открывает диалоговое окно для выбора файла с текстом.
+     * Загружает содержимое файла в поле ввода.
+     */
     @FXML
     private void selectInputFile() {
-        FileChooser fileChooser = createFileChooser();
+        FileChooser fileChooser = fileHelper.createTextFileChooser("Выберите файл");
         File file = fileChooser.showOpenDialog(inputTextArea.getScene().getWindow());
+
         if (file != null) {
-            loadFileContent(file);
-        }
-    }
-
-    @FXML
-    private void saveOutputFile() {
-        String outputText = outputTextArea.getText();
-        if (outputText.isEmpty()) {
-            showAlert("Ошибка", "Нет текста для сохранения");
-            return;
-        }
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Сохранить результат");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Текстовые файлы", "*.txt")
-        );
-
-        File file = fileChooser.showSaveDialog(outputTextArea.getScene().getWindow());
-        if (file != null) {
-            saveTextToFile(outputText, file);
-        }
-    }
-
-    private void saveTextToFile(String content, File file) {
-        try {
-            Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
-            showStatus("Файл успешно сохранен: " + file.getName(), false);
-        } catch (IOException e) {
-            showAlert("Ошибка", "Не удалось сохранить файл: " + e.getMessage());
-        }
-    }
-
-    private FileChooser createFileChooser() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Выберите файл");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Текстовые файлы", "*.txt")
-        );
-        return fileChooser;
-    }
-
-    private void loadFileContent(File file) {
-        try {
-            String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-            inputTextArea.setText(content);
-            showStatus("Файл успешно загружен: " + file.getName(), false);
-        } catch (IOException e) {
-            showAlert("Ошибка", "Не удалось прочитать файл: " + e.getMessage());
+            try {
+                String content = fileHelper.readTextFromFile(file);
+                inputTextArea.setText(content);
+                showStatus("Файл успешно загружен: " + file.getName(), false);
+            } catch (Exception e) {
+                alertHelper.showAlert("Ошибка", "Не удалось прочитать файл: " + e.getMessage());
+            }
         }
     }
 
     /**
-     * Обработчик кнопки шифрования текста.
-     * Считывает текст из поля ввода, шифрует его с указанным ключом
-     * и выводит зашифрованный текст в поле вывода.
-     * В случае ошибки показывает диалоговое окно с описанием проблемы.
+     * Открывает диалоговое окно для сохранения результата в файл.
+     * Сохраняет содержимое поля вывода в выбранный файл.
+     */
+    @FXML
+    private void saveOutputFile() {
+        String outputText = outputTextArea.getText();
+        if (outputText.isEmpty()) {
+            alertHelper.showAlert("Ошибка", "Нет текста для сохранения");
+            return;
+        }
+
+        FileChooser fileChooser = fileHelper.createTextFileChooser("Сохранить результат");
+        File file = fileChooser.showSaveDialog(outputTextArea.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                fileHelper.saveTextToFile(outputText, file);
+                showStatus("Файл успешно сохранен: " + file.getName(), false);
+            } catch (Exception e) {
+                alertHelper.showAlert("Ошибка", "Не удалось сохранить файл: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Обрабатывает нажатие кнопки "Зашифровать".
+     * Шифрует текст из поля ввода с указанным (или случайным) ключом.
      */
     @FXML
     private void handleEncode() {
@@ -193,41 +177,34 @@ public class MainController {
             String inputText = inputTextArea.getText();
 
             if (inputText.isEmpty()) {
-                showAlert("Ошибка", "Введите текст для шифрования");
+                alertHelper.showAlert("Ошибка", "Введите текст для шифрования");
+                resetControlsState();
                 return;
             }
 
-            Task<String> encodeTask = new Task<>() {
-                @Override
-                protected String call() {
-                    return encodeText(inputText, key);
-                }
-            };
+            EncodeTask encodeTask = new EncodeTask(inputText, key);
+            setupTaskHandlers(encodeTask, "Текст успешно зашифрован с ключом " + key, "Ошибка шифрования");
 
             encodeTask.setOnSucceeded(event -> {
                 String encodedText = encodeTask.getValue();
                 outputTextArea.setText(encodedText);
                 keyField.setText(String.valueOf(key));
                 showStatus("Текст успешно зашифрован с ключом " + key, false);
-                disableControls(false);
-                progressBar.setVisible(false);
-            });
-
-            encodeTask.setOnFailed(event -> {
-                showAlert("Ошибка шифрования", encodeTask.getException().getMessage());
-                disableControls(false);
-                progressBar.setVisible(false);
+                resetControlsState();
             });
 
             new Thread(encodeTask).start();
 
         } catch (NumberFormatException e) {
-            showAlert("Ошибка шифрования", e.getMessage());
-            disableControls(false);
-            progressBar.setVisible(false);
+            alertHelper.showAlert("Ошибка шифрования", e.getMessage());
+            resetControlsState();
         }
     }
 
+    /**
+     * Обрабатывает нажатие кнопки "Дешифровать".
+     * Дешифрует текст из поля ввода с указанным ключом.
+     */
     @FXML
     private void handleDecode() {
         try {
@@ -238,40 +215,26 @@ public class MainController {
             String inputText = inputTextArea.getText();
 
             if (inputText.isEmpty()) {
-                showAlert("Ошибка", "Введите зашифрованный текст");
+                alertHelper.showAlert("Ошибка", "Введите зашифрованный текст");
+                resetControlsState();
                 return;
             }
 
-            Task<String> decodeTask = new Task<>() {
-                @Override
-                protected String call() {
-                    return decodeText(inputText, key);
-                }
-            };
-
-            decodeTask.setOnSucceeded(event -> {
-                String decodedText = decodeTask.getValue();
-                outputTextArea.setText(decodedText);
-                showStatus("Текст успешно дешифрован с ключом " + key, false);
-                disableControls(false);
-                progressBar.setVisible(false);
-            });
-
-            decodeTask.setOnFailed(event -> {
-                showAlert("Ошибка дешифрования", decodeTask.getException().getMessage());
-                disableControls(false);
-                progressBar.setVisible(false);
-            });
+            DecodeTask decodeTask = new DecodeTask(inputText, key);
+            setupTaskHandlers(decodeTask, "Текст успешно дешифрован с ключом " + key, "Ошибка дешифрования");
 
             new Thread(decodeTask).start();
 
         } catch (NumberFormatException e) {
-            showAlert("Ошибка дешифрования", e.getMessage());
-            disableControls(false);
-            progressBar.setVisible(false);
+            alertHelper.showAlert("Ошибка дешифрования", e.getMessage());
+            resetControlsState();
         }
     }
 
+    /**
+     * Обрабатывает нажатие кнопки "Brute-force".
+     * Автоматически подбирает ключ для зашифрованного текста.
+     */
     @FXML
     private void handleBruteForce() {
         try {
@@ -281,16 +244,12 @@ public class MainController {
             String inputText = inputTextArea.getText();
 
             if (inputText.isEmpty()) {
-                showAlert("Ошибка", "Введите зашифрованный текст");
+                alertHelper.showAlert("Ошибка", "Введите зашифрованный текст");
+                resetControlsState();
                 return;
             }
 
-            Task<TextBruteForce.BruteForceResult> bruteForceTask = new Task<>() {
-                @Override
-                protected TextBruteForce.BruteForceResult call() {
-                    return TextBruteForce.bruteForce(inputText);
-                }
-            };
+            BruteForceTask bruteForceTask = new BruteForceTask(inputText);
 
             bruteForceTask.setOnSucceeded(event -> {
                 TextBruteForce.BruteForceResult result = bruteForceTask.getValue();
@@ -307,25 +266,47 @@ public class MainController {
                     message += "\n" + result.getMessage();
                 }
 
-                showAlert("Brute-force", message);
-                showStatus("Брутфорс завершен. Найден ключ: " + result.getKey(), false);
-                disableControls(false);
-                progressBar.setVisible(false);
+                alertHelper.showAlert("Brute-force", message);
+                showStatus("Brute-force завершен. Найден ключ: " + result.getKey(), false);
+                resetControlsState();
             });
 
             bruteForceTask.setOnFailed(event -> {
-                showAlert("Ошибка brute-force", bruteForceTask.getException().getMessage());
-                disableControls(false);
-                progressBar.setVisible(false);
+                alertHelper.showAlert("Ошибка brute-force", bruteForceTask.getException().getMessage());
+                resetControlsState();
             });
 
             new Thread(bruteForceTask).start();
 
         } catch (Exception e) {
-            showAlert("Ошибка brute-force", e.getMessage());
-            disableControls(false);
-            progressBar.setVisible(false);
+            alertHelper.showAlert("Ошибка brute-force", e.getMessage());
+            resetControlsState();
         }
+    }
+
+    /**
+     * Настраивает обработчики событий для асинхронной задачи.
+     *
+     * @param task           задача (шифрование/дешифрование)
+     * @param successMessage сообщение при успешном выполнении
+     * @param errorTitle     заголовок ошибки при сбое
+     */
+    private <T> void setupTaskHandlers(Task<T> task, String successMessage, String errorTitle) {
+        task.setOnSucceeded(event -> {
+            outputTextArea.setText(task.getValue().toString());
+            showStatus(successMessage, false);
+            resetControlsState();
+        });
+
+        task.setOnFailed(event -> {
+            alertHelper.showAlert(errorTitle, task.getException().getMessage());
+            resetControlsState();
+        });
+    }
+
+    private void resetControlsState() {
+        disableControls(false);
+        progressBar.setVisible(false);
     }
 
     private void disableControls(boolean disable) {
@@ -337,12 +318,12 @@ public class MainController {
     }
 
     /**
-     * Парсинг ключа шифрования из текстового поля.
-     * Если ключ не введён и это шифрование, генерирует случайный ключ.
+     * Парсит ключ из текстового поля.
+     * Если поле пустое и разрешена генерация случайного ключа, создает его.
      *
-     * @param allowRandom если true, генерирует случайный ключ при пустом поле
-     * @return Целочисленное значение ключа шифрования
-     * @throws NumberFormatException если ключ некорректен или обязателен, но не введён
+     * @param allowRandom разрешена ли генерация случайного ключа
+     * @return числовой ключ
+     * @throws NumberFormatException если ключ невалиден или обязателен, но не введен
      */
     private int parseKey(boolean allowRandom) {
         String keyText = keyField.getText().trim();
@@ -354,44 +335,38 @@ public class MainController {
             }
         }
         try {
-            return Integer.parseInt(keyText);
+            int key = Integer.parseInt(keyText);
+            keyValidator.validateKeyRange(key);
+            return key;
         } catch (NumberFormatException e) {
             throw new NumberFormatException("Ключ должен быть числом");
+        } catch (IllegalArgumentException e) {
+            throw new NumberFormatException(e.getMessage());
         }
     }
 
-    private String encodeText(String text, int key) {
-        StringBuilder encodedContent = new StringBuilder();
+    /**
+     * Отображает статус операции в нижней части окна.
+     *
+     * @param message текст сообщения
+     * @param isError является ли сообщение ошибкой
+     */
+    private void showStatus(String message, boolean isError) {
+        statusLabel.setText(message);
 
-        for (String line : text.split("\n")) {
-            String encodedLine = TextEncoder.encodeText(line, key);
-            encodedContent.append(encodedLine).append("\n");
+        if (isError) {
+            statusLabel.getStyleClass().removeAll("status-success");
+            statusLabel.getStyleClass().add("status-error");
+        } else if (!message.isEmpty()) {
+            statusLabel.getStyleClass().removeAll("status-error");
+            statusLabel.getStyleClass().add("status-success");
         }
-
-        return encodedContent.toString().trim();
     }
 
-    private String decodeText(String text, int key) {
-        StringBuilder decodedContent = new StringBuilder();
-
-        for (String line : text.split("\n")) {
-            String decodedLine = TextDecoder.decrypt(line, key);
-            decodedContent.append(decodedLine).append("\n");
-        }
-
-        return decodedContent.toString().trim();
-    }
-
-    private void showAlert(String title, String content) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(content);
-            alert.showAndWait();
-        });
-    }
-
+    /**
+     * Копирует текст из поля вывода в поле ввода.
+     * Используется для повторного шифрования/дешифрования.
+     */
     @FXML
     private void copyOutputToInput() {
         String outputText = outputTextArea.getText();
@@ -402,6 +377,9 @@ public class MainController {
         }
     }
 
+    /**
+     * Очищает все поля ввода/вывода.
+     */
     @FXML
     private void clearAllFields() {
         inputTextArea.clear();
@@ -410,16 +388,19 @@ public class MainController {
         showStatus("Все поля очищены", false);
     }
 
+    /**
+     * Показывает справочное окно с инструкцией по использованию приложения.
+     */
     @FXML
     private void showHelp() {
-        showAlert("Справка",
+        alertHelper.showAlert("Справка",
                 "Криптоанализатор - приложение для шифрования и дешифрования текста методом Цезаря.\n\n" +
                         "Порядок работы:\n" +
                         "1. Введите текст или загрузите файл\n" +
                         "2. Укажите ключ шифрования (число от 1 до " + MAX_KEY_VALUE + ")\n" +
                         "3. Выберите операцию (шифрование, дешифрование или взлом)\n\n" +
                         "При шифровании можно оставить поле ключа пустым - будет сгенерирован случайный ключ.\n" +
-                        "Для брутфорса ключ указывать не требуется, приложение автоматически найдет наиболее вероятный ключ."
+                        "Для brute-force ключ указывать не требуется, приложение автоматически найдет наиболее вероятный ключ."
         );
     }
 }

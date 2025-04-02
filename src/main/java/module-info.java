@@ -5,4 +5,6 @@ module cryptanalyzer {
     exports ru.cooper.cryptanalyzer;
 
     opens ru.cooper.cryptanalyzer.controllers.ui to javafx.fxml;
+
+    uses ru.cooper.cryptanalyzer.CryptAnalyzerApp;
 }

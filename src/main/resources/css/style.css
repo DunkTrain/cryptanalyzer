@@ -1,54 +1,111 @@
+/* ========== ОСНОВНЫЕ СТИЛИ ========== */
 .root {
-    -fx-background-color: #EDEDED;
-    -fx-padding: 20px;
-    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #EDEDED; /* Цвет фона всего приложения */
+    -fx-padding: 20px; /* Отступы от краев окна */
+    -fx-font-family: "Segoe UI", sans-serif; /* Основной шрифт */
 }
 
-.label {
-    -fx-font-size: 16px;
-    -fx-text-fill: #444;
+/* ========== ТИПОГРАФИКА ========== */
+.title-label {
+    -fx-text-fill: #2c3e50; /* Цвет текста заголовка */
+    -fx-font-weight: bold; /* Жирное начертание */
+    -fx-font-size: 24px; /* Размер шрифта */
 }
 
-.text-field, .text-area {
-    -fx-background-color: white;
-    -fx-border-color: #A1A1A1;
-    -fx-border-radius: 8px;
-    -fx-padding: 8px;
-    -fx-font-size: 14px;
-}
-
-.text-field {
-    -fx-prompt-text-fill: #888888; /* Серый нейтральный цвет для подсказки */
-}
-
-.text-area {
-    -fx-pref-height: 120px;
-}
-
-.button {
-    -fx-background-color: linear-gradient(to bottom, #0078D7, #005A9E);
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-border-radius: 8px;
-    -fx-padding: 10px 20px;
-    -fx-font-size: 14px;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 2, 2);
-}
-
-.button:hover {
-    -fx-background-color: #005A9E;
-}
-
-.result-area {
-    -fx-border-color: #0078D7;
-    -fx-border-width: 2px;
-    -fx-border-radius: 8px;
-    -fx-background-color: #FAFAFA;
+.section-label {
+    -fx-font-size: 16px; /* Размер шрифта для подзаголовков */
+    -fx-text-fill: #444; /* Цвет текста */
+    -fx-font-weight: bold; /* Жирное начертание */
 }
 
 .hint-label {
-    -fx-font-size: 13px;
-    -fx-text-fill: #666;
-    -fx-font-style: italic;
+    -fx-font-size: 13px; /* Размер шрифта подсказок */
+    -fx-text-fill: #666; /* Цвет текста */
+    -fx-font-style: italic; /* Курсивное начертание */
+}
+
+.status-label {
+    -fx-font-size: 12px; /* Размер шрифта статуса */
+}
+
+/* ========== ПОЛЯ ВВОДА ========== */
+.input-text-area, .output-text-area {
+    -fx-background-color: white; /* Цвет фона */
+    -fx-border-color: #A1A1A1; /* Цвет рамки */
+    -fx-border-radius: 8px; /* Закругление углов */
+    -fx-padding: 8px; /* Внутренние отступы */
+    -fx-font-size: 14px; /* Размер шрифта */
+    -fx-pref-height: 120px; /* Предпочтительная высота */
+}
+
+.output-text-area {
+    -fx-border-color: #0078D7; /* Синяя рамка для области вывода */
+    -fx-border-width: 2px; /* Толщина рамки */
+    -fx-background-color: #FAFAFA; /* Светлый фон для области вывода */
+}
+
+.key-field {
+    -fx-prompt-text-fill: #888888; /* Цвет подсказки в поле ввода */
+}
+
+/* ========== КНОПКИ ========== */
+.action-button {
+    -fx-background-color: linear-gradient(to bottom, #0078D7, #005A9E); /* Градиентный фон */
+    -fx-text-fill: white; /* Цвет текста */
+    -fx-font-weight: bold; /* Жирное начертание */
+    -fx-border-radius: 8px; /* Закругление углов */
+    -fx-padding: 10px 20px; /* Внутренние отступы */
+    -fx-font-size: 14px; /* Размер шрифта */
+    -fx-cursor: hand; /* Курсор в виде руки */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 2, 2); /* Тень */
+}
+
+.action-button:hover {
+    -fx-background-color: #005A9E; /* Цвет при наведении */
+}
+
+.utility-button {
+    -fx-background-color: #6c757d; /* Серый цвет для служебных кнопок */
+    -fx-text-fill: white;
+    /* Остальные свойства наследуются от action-button */
+}
+
+.icon-button {
+    -fx-min-width: 40px; /* Фиксированная ширина */
+    -fx-background-color: #6c757d; /* Серый цвет */
+    -fx-text-fill: white;
+}
+
+.file-button {
+    -fx-background-color: #28a745; /* Зеленый цвет для кнопки файла */
+    -fx-text-fill: white;
+}
+
+/* ========== СПЕЦИАЛЬНЫЕ ЭЛЕМЕНТЫ ========== */
+.progress-bar {
+    -fx-accent: #0078D7; /* Цвет прогресс-бара */
+}
+
+.key-panel {
+    -fx-padding: 5px 0; /* Отступы для панели ключа */
+}
+
+.status-panel {
+    -fx-padding: 10px 0; /* Отступы для статусной панели */
+}
+
+.key-label {
+    -fx-font-size: 14px; /* Размер шрифта для подписи ключа */
+    -fx-text-fill: #333; /* Цвет текста */
+    -fx-font-weight: bold; /* Жирное начертание */
+}
+
+.action-panel {
+    -fx-spacing: 10px; /* Расстояние между элементами */
+    -fx-alignment: center; /* Выравнивание элементов по центру */
+}
+
+.output-panel {
+    -fx-spacing: 10px; /* Расстояние между элементами панели вывода */
+    -fx-alignment: center; /* Выравнивание элементов по центру */
 }
