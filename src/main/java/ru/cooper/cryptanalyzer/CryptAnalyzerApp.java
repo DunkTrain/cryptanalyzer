@@ -11,19 +11,34 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Основной класс приложения "Криптоанализатор".
+ * Запускает графический интерфейс пользователя (GUI) с использованием JavaFX.
+ */
 public class CryptAnalyzerApp extends Application {
 
+    /**
+     * Метод запускает главное окно приложения.
+     *
+     * @param primaryStage Главная сцена JavaFX
+     */
     @Override
     public void start(Stage primaryStage) {
         try {
+            // Загрузка главного окна из FXML-файла
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/main-view.fxml")));
 
+            // Установка заголовка окна
             primaryStage.setTitle("Криптоанализатор");
+
+            // Создание сцены с размерами 1000x800 пикселей
             primaryStage.setScene(new Scene(root, 1000, 800));
 
+            // Установка иконки приложения
             Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon.png")));
             primaryStage.getIcons().add(icon);
 
+            // Отображение главного окна
             primaryStage.show();
 
         } catch (IOException e) {
@@ -35,6 +50,11 @@ public class CryptAnalyzerApp extends Application {
         }
     }
 
+    /**
+     * Отображает всплывающее окно с сообщением об ошибке.
+     *
+     * @param message Текст ошибки
+     */
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Ошибка");
@@ -43,6 +63,11 @@ public class CryptAnalyzerApp extends Application {
         alert.showAndWait();
     }
 
+    /**
+     * Точка входа в приложение.
+     *
+     * @param args Аргументы командной строки
+     */
     public static void main(String[] args) {
         launch(args);
     }
