@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * Реализует взлом шифра Цезаря методом полного перебора с анализом частотности символов,
  * структуры текста и совпадений со словарем.
  */
-public class TextBruteForce extends TextDecoder {
+public class TextBruteForce {
 
     private static final double FREQUENCY_MULTIPLIER = 10.0;
     private static final double STRUCTURE_WEIGHT = 3.0;
@@ -23,17 +23,38 @@ public class TextBruteForce extends TextDecoder {
     private static final double MIN_TEXT_LENGTH = 10;
 
     /** Статистика частоты букв в русском языке. */
-    private static final Map<Character, Double> RUSSIAN_LETTER_FREQUENCY = createFrequencyMap();
+    private final Map<Character, Double> russianLetterFrequency;
 
     /** Регулярное выражение для проверки структуры осмысленного текста. */
     private static final String MEANINGFUL_TEXT_REGEX = "^\\W*[а-яА-Я]+([\\s,.:;-]+[а-яА-Я]+)*";
-    private static final Pattern MEANINGFUL_PATTERN = Pattern.compile(MEANINGFUL_TEXT_REGEX);
+    private final Pattern meaningfulPattern;
 
     /** Регулярное выражение для проверки наличия пробелов между словами. */
     private static final String SPACES_PATTERN_REGEX = "\\b[а-яА-Я]{2,}\\s+[а-яА-Я]{2,}\\b";
-    private static final Pattern SPACES_PATTERN = Pattern.compile(SPACES_PATTERN_REGEX);
+    private final Pattern spacesPattern;
 
-    private static Map<Character, Double> createFrequencyMap() {
+    private final TextDecoder textDecoder;
+
+    /**
+     * Конструктор по умолчанию.
+     */
+    public TextBruteForce() {
+        this(new TextDecoder());
+    }
+
+    /**
+     * Конструктор с внедрением зависимости TextDecoder.
+     *
+     * @param textDecoder декодер текста
+     */
+    public TextBruteForce(TextDecoder textDecoder) {
+        this.textDecoder = textDecoder;
+        this.russianLetterFrequency = createFrequencyMap();
+        this.meaningfulPattern = Pattern.compile(MEANINGFUL_TEXT_REGEX);
+        this.spacesPattern = Pattern.compile(SPACES_PATTERN_REGEX);
+    }
+
+    private Map<Character, Double> createFrequencyMap() {
         Map<Character, Double> frequencyMap = new HashMap<>();
         frequencyMap.put('о', 0.1097); frequencyMap.put('е', 0.0849);
         frequencyMap.put('а', 0.0801); frequencyMap.put('и', 0.0735);
@@ -60,7 +81,7 @@ public class TextBruteForce extends TextDecoder {
      * @param encryptedText зашифрованный текст
      * @return результат с наилучшим вариантом расшифровки
      */
-    public static BruteForceResult bruteForce(String encryptedText) {
+    public BruteForceResult bruteForce(String encryptedText) {
         if (encryptedText == null || encryptedText.isEmpty()) {
             return new BruteForceResult("", 0, 0.0);
         }
@@ -75,7 +96,7 @@ public class TextBruteForce extends TextDecoder {
         double bestScore = Double.NEGATIVE_INFINITY;
 
         for (int key = 0; key < CryptoAlphabet.LENGTH_ALPHABET; key++) {
-            String decryptedText = decrypt(encryptedText, key);
+            String decryptedText = textDecoder.decrypt(encryptedText, key);
             double score = calculateTextQuality(decryptedText);
 
             if (score > bestScore) {
@@ -84,7 +105,6 @@ public class TextBruteForce extends TextDecoder {
             }
         }
 
-        // Если уверенность слишком низкая, возвращаем предупреждение
         if (bestResult.getConfidenceScore() < 0.3) {
             bestResult = new BruteForceResult(
                     bestResult.getDecryptedText(),
@@ -103,24 +123,23 @@ public class TextBruteForce extends TextDecoder {
      * @param text текст для оценки
      * @return числовая оценка качества (чем выше, тем лучше)
      */
-    private static double calculateTextQuality(String text) {
+    private double calculateTextQuality(String text) {
         String trimmedText = text.trim();
 
         if (trimmedText.length() < MIN_TEXT_LENGTH) {
             return 0.0;
         }
 
-        Matcher matcher = MEANINGFUL_PATTERN.matcher(trimmedText);
+        Matcher matcher = meaningfulPattern.matcher(trimmedText);
         double structureScore = matcher.matches() ? STRUCTURE_WEIGHT : 0.0;
 
-        Matcher spacesMatcher = SPACES_PATTERN.matcher(trimmedText);
+        Matcher spacesMatcher = spacesPattern.matcher(trimmedText);
         if (spacesMatcher.find()) {
             structureScore += 1.0;
         }
 
         double frequencyScore = analyzeLetterFrequency(trimmedText);
         double dictionaryScore = analyzeDictionaryMatch(trimmedText);
-
 
         int russianLetterCount = trimmedText.replaceAll("[^а-яА-Я]", "").length();
         double lengthScore = Math.min(russianLetterCount / 20.0, 5.0) * LENGTH_WEIGHT;
@@ -134,7 +153,7 @@ public class TextBruteForce extends TextDecoder {
      * @param text текст для анализа
      * @return оценка соответствия частот (0.0 - 1.0)
      */
-    private static double analyzeLetterFrequency(String text) {
+    private double analyzeLetterFrequency(String text) {
         Map<Character, Integer> letterCount = new HashMap<>();
         int totalLetters = 0;
 
@@ -148,7 +167,7 @@ public class TextBruteForce extends TextDecoder {
         if (totalLetters == 0) return 0.0;
 
         int finalTotalLetters = totalLetters;
-        double frequencyScore = RUSSIAN_LETTER_FREQUENCY.entrySet().stream()
+        double frequencyScore = russianLetterFrequency.entrySet().stream()
                 .mapToDouble(entry -> {
                     double expected = entry.getValue();
                     double actual = letterCount.getOrDefault(entry.getKey(), 0) / (double) finalTotalLetters;
@@ -165,7 +184,7 @@ public class TextBruteForce extends TextDecoder {
      * @param text текст для анализа
      * @return оценка от 0.0 до DICTIONARY_WEIGHT
      */
-    private static double analyzeDictionaryMatch(String text) {
+    private double analyzeDictionaryMatch(String text) {
         String cleanText = text.replaceAll("[^а-яА-Я\\s]", "").toLowerCase().trim();
         String[] words = cleanText.split("\\s+");
 

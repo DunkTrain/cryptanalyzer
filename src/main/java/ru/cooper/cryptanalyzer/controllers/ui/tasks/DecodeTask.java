@@ -12,6 +12,7 @@ public class DecodeTask extends Task<String> {
 
     private final String text;
     private final int key;
+    private final TextDecoder decoder;
 
     /**
      * Создает задачу для дешифрования.
@@ -22,6 +23,7 @@ public class DecodeTask extends Task<String> {
     public DecodeTask(String text, int key) {
         this.text = text;
         this.key = key;
+        this.decoder = new TextDecoder();
     }
 
     /**
@@ -34,7 +36,7 @@ public class DecodeTask extends Task<String> {
         StringBuilder decodedContent = new StringBuilder();
 
         for (String line : text.split("\n")) {
-            String decodedLine = TextDecoder.decrypt(line, key);
+            String decodedLine = decoder.decrypt(line, key);
             decodedContent.append(decodedLine).append("\n");
         }
 

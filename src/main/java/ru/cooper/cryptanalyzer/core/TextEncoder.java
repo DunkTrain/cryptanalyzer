@@ -15,7 +15,7 @@ import static ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet.LENGTH_ALPHABE
  *
  * <p>Все методы класса статические - экземпляры не создаются</p>
  */
-public final class TextEncoder {
+public class TextEncoder {
 
     /**
      * Шифрует текст с использованием указанного ключа.
@@ -24,7 +24,7 @@ public final class TextEncoder {
      * @param encryptionKey ключ шифрования.
      * @return зашифрованный текст.
      */
-    public static String encodeText(String inputText, int encryptionKey) {
+    public String encodeText(String inputText, int encryptionKey) {
         if (inputText == null || inputText.isEmpty()) {
             return "";
         }
@@ -45,7 +45,7 @@ public final class TextEncoder {
      * @param key ключ шифрования (величина сдвига)
      * @return зашифрованный символ
      */
-    public static char encryptCharRight(char symbol, int key) {
+    public char encryptCharRight(char symbol, int key) {
         if (ALPHABET.indexOf(symbol) != -1) {
             return ALPHABET.charAt((ALPHABET.indexOf(symbol) + key) % LENGTH_ALPHABET);
         } else {
