@@ -12,16 +12,18 @@ public class EncodeTask extends Task<String> {
 
     private final String text;
     private final int key;
+    private final TextEncoder textEncoder;
 
     /**
      * Создает задачу для шифрования.
      *
      * @param text исходный текст.
-     * @param key  ключ шифрования (должен быть от 1 до {@link CryptoAlphabet#LENGTH_ALPHABET}.
+     * @param key  ключ шифрования (должен быть от 1 до {@link CryptoAlphabet#LENGTH_ALPHABET}).
      */
     public EncodeTask(String text, int key) {
         this.text = text;
         this.key = key;
+        this.textEncoder = new TextEncoder();
     }
 
     /**
@@ -34,7 +36,7 @@ public class EncodeTask extends Task<String> {
         StringBuilder encodedContent = new StringBuilder();
 
         for (String line : text.split("\n")) {
-            String encodedLine = TextEncoder.encodeText(line, key);
+            String encodedLine = textEncoder.encodeText(line, key);
             encodedContent.append(encodedLine).append("\n");
         }
 

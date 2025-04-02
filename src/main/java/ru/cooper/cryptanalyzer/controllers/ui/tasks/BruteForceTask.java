@@ -10,6 +10,7 @@ import ru.cooper.cryptanalyzer.core.TextBruteForce;
 public class BruteForceTask extends Task<TextBruteForce.BruteForceResult> {
 
     private final String text;
+    private final TextBruteForce bruteForce;
 
     /**
      * Создаем задачу для взлома текста.
@@ -18,6 +19,7 @@ public class BruteForceTask extends Task<TextBruteForce.BruteForceResult> {
      */
     public BruteForceTask(String text) {
         this.text = text;
+        this.bruteForce = new TextBruteForce();
     }
 
     /**
@@ -27,6 +29,6 @@ public class BruteForceTask extends Task<TextBruteForce.BruteForceResult> {
      */
     @Override
     protected TextBruteForce.BruteForceResult call() {
-        return TextBruteForce.bruteForce(text);
+        return bruteForce.bruteForce(text);
     }
 }

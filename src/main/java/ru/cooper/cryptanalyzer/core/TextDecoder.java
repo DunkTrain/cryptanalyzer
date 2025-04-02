@@ -21,7 +21,7 @@ public class TextDecoder {
      * @param key ключ дешифрования.
      * @return расшифрованный текст.
      */
-    public static String decrypt(String ciphertext, int key) {
+    public String decrypt(String ciphertext, int key) {
         if (ciphertext == null || ciphertext.isEmpty()) {
             return "";
         }
@@ -42,7 +42,7 @@ public class TextDecoder {
      * @param key ключ дешифрования (сдвиг)
      * @return дешифрованный символ
      */
-    public static char leftOffset(char symbol, int key) {
+    public char leftOffset(char symbol, int key) {
         if (CryptoAlphabet.contains(symbol)) {
             int alphabetIndex = CryptoAlphabet.getIndexOf(symbol);
             int newIndex = (alphabetIndex + CryptoAlphabet.LENGTH_ALPHABET - key) % CryptoAlphabet.LENGTH_ALPHABET;
