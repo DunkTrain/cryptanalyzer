@@ -7,12 +7,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import ru.cooper.cryptanalyzer.util.UTF8Control;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 /**
  * Основной класс приложения "Криптоанализатор".
@@ -23,22 +20,9 @@ public class CryptAnalyzerApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            Locale locale = Locale.forLanguageTag("ru");
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/main-view.fxml")));
 
-            ResourceBundle bundle = ResourceBundle.getBundle(
-                    "i18n.Messages",
-                    locale,
-                    new UTF8Control()
-            );
-
-            FXMLLoader loader = new FXMLLoader(
-                    Objects.requireNonNull(getClass().getResource("/main-view.fxml")),
-                    bundle
-            );
-
-            Parent root = loader.load();
-
-            primaryStage.setTitle(bundle.getString("app.title"));
+            primaryStage.setTitle("Криптоанализатор");
 
             primaryStage.setScene(new Scene(root, 1000, 800));
 
@@ -52,10 +36,10 @@ public class CryptAnalyzerApp extends Application {
             showErrorAlert("Не удалось загрузить интерфейс приложения");
         } catch (Exception e) {
             System.err.println("Неожиданная ошибка: " + e.getMessage());
-            e.printStackTrace();
             showErrorAlert("Произошла непредвиденная ошибка");
         }
     }
+
 
     /**
      * Отображает всплывающее окно с сообщением об ошибке.

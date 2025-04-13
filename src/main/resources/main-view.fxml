@@ -5,64 +5,72 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
-
 <?import java.net.URL?>
+
+<!-- Главный контейнер приложения -->
 <VBox alignment="CENTER" spacing="15" xmlns:fx="http://javafx.com/fxml"
       fx:controller="ru.cooper.cryptanalyzer.controllers.ui.MainController">
-
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <!-- Заголовок приложения: теперь %app.title -->
-    <Label text="%app.title" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;">
+    <!-- ========== ЗАГОЛОВОК ========== -->
+    <Label text="Криптоанализатор" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;">
         <font>
             <Font name="System Bold" size="24"/>
         </font>
     </Label>
 
-    <!-- Область ввода: %app.label.input -->
-    <Label text="%app.label.input" styleClass="section-label"/>
-    <TextArea fx:id="inputTextArea" styleClass="input-text-area" VBox.vgrow="ALWAYS"/>
+    <!-- ========== ОБЛАСТЬ ВВОДА ========== -->
+    <Label text="Введите текст или загрузите файл:" styleClass="section-label"/>
+    <TextArea fx:id="inputTextArea" styleClass="input-text-area"
+              promptText="Введите текст..." VBox.vgrow="ALWAYS"/>
 
-    <!-- Панель ключа и выбора языка -->
+    <!-- ========== ПАНЕЛЬ КЛЮЧА И ВЫБОРА ЯЗЫКА ========== -->
     <HBox spacing="10" alignment="CENTER_LEFT" styleClass="key-panel">
-        <Label text="%app.label.key" styleClass="key-label"/>
-        <TextField fx:id="keyField" styleClass="key-field" HBox.hgrow="ALWAYS"/>
+        <Label text="Ключ (число):" styleClass="key-label"/>
+        <TextField fx:id="keyField" styleClass="key-field"
+                   promptText="Введите ключ" HBox.hgrow="ALWAYS"/>
 
-        <Label text="%app.label.language" styleClass="key-label"/>
+        <!-- Новый блок: выбор языка -->
+        <Label text="Язык:" styleClass="key-label"/>
         <ComboBox fx:id="languageComboBox" prefWidth="120"/>
 
-        <Button text="%app.button.openFile" onAction="#selectInputFile" styleClass="file-button"/>
+        <Button text="📂 Выбрать файл" onAction="#selectInputFile" styleClass="file-button"/>
     </HBox>
 
-    <!-- Панель действий -->
+    <!-- ========== ПАНЕЛЬ ДЕЙСТВИЙ ========== -->
     <HBox spacing="10" alignment="CENTER" styleClass="action-panel">
-        <Button fx:id="encodeButton" text="%app.button.encode" onAction="#handleEncode" styleClass="action-button"/>
-        <Button fx:id="decodeButton" text="%app.button.decode" onAction="#handleDecode" styleClass="action-button"/>
-        <Button fx:id="bruteForceButton" text="%app.button.brute" onAction="#handleBruteForce" styleClass="action-button"/>
-        <Button text="%app.button.clear" onAction="#clearAllFields" styleClass="utility-button"/>
-        <Button text="%app.button.help" onAction="#showHelp" styleClass="utility-button"/>
+        <Button fx:id="encodeButton" text="🔒 Зашифровать" onAction="#handleEncode" styleClass="action-button"/>
+        <Button fx:id="decodeButton" text="🔓 Расшифровать" onAction="#handleDecode" styleClass="action-button"/>
+        <Button fx:id="bruteForceButton" text="🔓 Брут-форс" onAction="#handleBruteForce" styleClass="action-button"/>
+        <Button text="🗑️ Очистить" onAction="#clearAllFields" styleClass="utility-button"/>
+        <Button text="❓ Справка" onAction="#showHelp" styleClass="utility-button"/>
     </HBox>
 
+    <!-- ========== ИНДИКАТОР ПРОГРЕССА ========== -->
     <ProgressBar fx:id="progressBar" styleClass="progress-bar"
                  prefWidth="Infinity" visible="false"/>
 
-    <Label text="%app.label.result" styleClass="section-label"/>
+    <!-- ========== ОБЛАСТЬ ВЫВОДА ========== -->
+    <Label text="Результат:" styleClass="section-label"/>
     <HBox spacing="10" alignment="CENTER" styleClass="output-panel">
         <TextArea fx:id="outputTextArea" styleClass="output-text-area"
-                  editable="false" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS"/>
+                  promptText="Результат обработки" VBox.vgrow="ALWAYS"
+                  editable="false" HBox.hgrow="ALWAYS"/>
         <VBox spacing="5" alignment="CENTER">
             <Button text="➡" onAction="#copyOutputToInput" styleClass="icon-button"/>
             <Button text="💾" onAction="#saveOutputFile" styleClass="icon-button"/>
         </VBox>
     </HBox>
 
+    <!-- ========== СТАТУСНАЯ ПАНЕЛЬ ========== -->
     <HBox spacing="10" alignment="CENTER" styleClass="status-panel">
-        <Label fx:id="hintLabel" styleClass="hint-label" text="%app.text.hint" HBox.hgrow="ALWAYS"/>
+        <Label fx:id="hintLabel" styleClass="hint-label" HBox.hgrow="ALWAYS"/>
         <Label fx:id="statusLabel" styleClass="status-label"/>
     </HBox>
 
+    <!-- Подключение CSS стилей -->
     <stylesheets>
         <URL value="@css/style.css"/>
     </stylesheets>
