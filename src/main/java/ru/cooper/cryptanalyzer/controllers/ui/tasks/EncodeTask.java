@@ -15,6 +15,9 @@ public class EncodeTask extends Task<String> {
     private final int key;
     private final TextEncoder textEncoder;
 
+    private static final int MIN_LENGTH = 10;
+    private static final int MIN_WORDS = 2;
+
     /**
      * @param text  исходный текст.
      * @param key   ключ шифрования
@@ -28,6 +31,16 @@ public class EncodeTask extends Task<String> {
 
     @Override
     protected String call() {
+        String trimmed = text.trim();
+        if (trimmed.length() < MIN_LENGTH) {
+            throw new IllegalArgumentException("Текст должен содержать не менее " + MIN_LENGTH + " символов.");
+        }
+
+        String[] words = trimmed.split("\\s+");
+        if (words.length < MIN_WORDS) {
+            throw new IllegalArgumentException("Текст должен содержать хотя бы два слова.");
+        }
+
         StringBuilder encodedContent = new StringBuilder();
 
         for (String line : text.split("\n")) {
