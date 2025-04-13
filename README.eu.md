@@ -4,8 +4,6 @@
 
 > 🇷🇺 [Read in Russian](README.ru.md)
 
----
-
 ## Features
 
 - 🔒 **Encryption** with a specified or random key.
@@ -14,14 +12,10 @@
 - 📂 **File support**: load input from and save output to a file.
 - 🌐 **Support for Russian alphabet**: Cyrillic letters, digits, and punctuation.
 
----
-
 ## Requirements
 
 - Java 21+
 - Maven
-
----
 
 ## Run the app
 
@@ -41,7 +35,7 @@ java -jar cryptanalyzer-2.2.1.jar
 git clone https://github.com/username/cryptanalyzer.git
 cd cryptanalyzer
 mvn clean package
-java -jar target/cryptanalyzer-2.1.0.jar
+java -jar target/cryptanalyzer-2.2.1.jar
 ```
 
 ### Option 3: Run via Maven
