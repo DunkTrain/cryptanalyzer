@@ -6,8 +6,9 @@ import ru.cooper.cryptanalyzer.domain.model.Alphabet;
 import ru.cooper.cryptanalyzer.domain.model.languages.RussianAlphabet;
 
 /**
- * Фоновая задача для дешифрования текст методом Цезаря.
- * Обрабатывает текст построчно с указанным ключом через {@link TextDecoder}.
+ * A background task that performs decryption using the Caesar cipher.
+ * <p>
+ * The text is processed line by line using the provided key and {@link TextDecoder}.
  */
 public class DecodeTask extends Task<String> {
 
@@ -16,10 +17,11 @@ public class DecodeTask extends Task<String> {
     private final TextDecoder decoder;
 
     /**
-     * Создает задачу для дешифрования.
+     * Constructs a new decryption task.
      *
-     * @param text зашифрованный текст.
-     * @param key  ключ дешифрования (должен быть от 1 до {@link RussianAlphabet#LENGTH}
+     * @param text     the encrypted text to decrypt
+     * @param key      the Caesar cipher key (should be between 1 and {@link RussianAlphabet#LENGTH})
+     * @param alphabet the alphabet used for decryption
      */
     public DecodeTask(String text, int key, Alphabet alphabet) {
         this.text = text;

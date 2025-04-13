@@ -26,8 +26,10 @@ import java.io.File;
 import java.util.Random;
 
 /**
- * Контроллер основного окна приложения.
- * Управляет логикой шифрования, дешифрования и взлома текста методом Цезаря.
+ * Controller for the main application window.
+ * <p>
+ * Manages Caesar cipher operations including encryption, decryption, and brute-force cracking.
+ * Handles user interaction, validation, and UI state.
  */
 public class MainController {
 
@@ -70,8 +72,8 @@ public class MainController {
     private final AlertHelper alertHelper;
 
     /**
-     * Конструктор контроллера.
-     * Инициализирует валидатор ключа, помощник для работы с файлами и уведомлениями.
+     * Constructs the controller and initializes helpers:
+     * key validator, file handler, and alert dialog utility.
      */
     public MainController() {
         this.keyValidator = new KeyValidator(MAX_KEY_VALUE);
@@ -80,8 +82,9 @@ public class MainController {
     }
 
     /**
-     * Инициализация JavaFX-компонентов после загрузки FXML.
-     * Настраивает подсказки, стили и валидацию полей.
+     * Initializes JavaFX UI components after the FXML is loaded.
+     * <p>
+     * Sets up UI hints, control states, and language options.
      */
     @FXML
     private void initialize() {
@@ -129,8 +132,8 @@ public class MainController {
     }
 
     /**
-     * Открывает диалоговое окно для выбора файла с текстом.
-     * Загружает содержимое файла в поле ввода.
+     * Opens a file chooser dialog to load a text file into the input area.
+     * Displays an alert on failure.
      */
     @FXML
     private void selectInputFile() {
@@ -149,8 +152,8 @@ public class MainController {
     }
 
     /**
-     * Открывает диалоговое окно для сохранения результата в файл.
-     * Сохраняет содержимое поля вывода в выбранный файл.
+     * Opens a file chooser dialog to save the contents of the output area.
+     * Displays an alert if there is no text or on I/O failure.
      */
     @FXML
     private void saveOutputFile() {
@@ -174,8 +177,10 @@ public class MainController {
     }
 
     /**
-     * Обрабатывает нажатие кнопки "Зашифровать".
-     * Шифрует текст из поля ввода с указанным (или случайным) ключом.
+     * Handles the "Encode" button action.
+     * <p>
+     * Validates input, generates or reads a key, performs encryption asynchronously,
+     * and displays the result or error.
      */
     @FXML
     private void handleEncode() {
@@ -207,8 +212,10 @@ public class MainController {
     }
 
     /**
-     * Обрабатывает нажатие кнопки "Дешифровать".
-     * Дешифрует текст из поля ввода с указанным ключом.
+     * Handles the "Decode" button action.
+     * <p>
+     * Validates input and key, performs decryption asynchronously,
+     * and displays the result or error.
      */
     @FXML
     private void handleDecode() {
@@ -239,8 +246,10 @@ public class MainController {
     }
 
     /**
-     * Обрабатывает нажатие кнопки "Brute-force".
-     * Автоматически подбирает ключ для зашифрованного текста.
+     * Handles the "Brute-force" button action.
+     * <p>
+     * Automatically finds the most probable Caesar cipher key based on a language profile
+     * and decrypts the input text.
      */
     @FXML
     private void handleBruteForce() {
@@ -294,11 +303,12 @@ public class MainController {
     }
 
     /**
-     * Настраивает обработчики событий для асинхронной задачи.
+     * Sets up success and failure handlers for a background task.
      *
-     * @param task           задача (шифрование/дешифрование)
-     * @param successMessage сообщение при успешном выполнении
-     * @param errorTitle     заголовок ошибки при сбое
+     * @param task           the asynchronous task (encode/decode)
+     * @param successMessage message to display on success
+     * @param errorTitle     title for error dialog on failure
+     * @param <T>            task result type
      */
     private <T> void setupTaskHandlers(Task<T> task, String successMessage, String errorTitle) {
         task.setOnSucceeded(event -> {
@@ -327,12 +337,13 @@ public class MainController {
     }
 
     /**
-     * Парсит ключ из текстового поля.
-     * Если поле пустое и разрешена генерация случайного ключа, создает его.
+     * Parses the Caesar cipher key from the text field.
+     * <p>
+     * If the field is empty and random generation is allowed, returns a random key.
      *
-     * @param allowRandom разрешена ли генерация случайного ключа
-     * @return числовой ключ
-     * @throws NumberFormatException если ключ невалиден или обязателен, но не введен
+     * @param allowRandom whether to generate a random key if none is provided
+     * @return the parsed key
+     * @throws NumberFormatException if the input is invalid or key is missing when required
      */
     private int parseKey(boolean allowRandom) {
         String keyText = keyField.getText().trim();
@@ -355,10 +366,10 @@ public class MainController {
     }
 
     /**
-     * Отображает статус операции в нижней части окна.
+     * Displays a status message in the status label with appropriate styling.
      *
-     * @param message текст сообщения
-     * @param isError является ли сообщение ошибкой
+     * @param message the status message
+     * @param isError whether the message represents an error
      */
     private void showStatus(String message, boolean isError) {
         statusLabel.setText(message);
@@ -373,8 +384,9 @@ public class MainController {
     }
 
     /**
-     * Копирует текст из поля вывода в поле ввода.
-     * Используется для повторного шифрования/дешифрования.
+     * Copies the content of the output text area into the input area.
+     * <p>
+     * Useful for chaining operations like encryption → decryption.
      */
     @FXML
     private void copyOutputToInput() {
@@ -387,7 +399,8 @@ public class MainController {
     }
 
     /**
-     * Очищает все поля ввода/вывода.
+     * Clears the input, output, and key fields.
+     * Resets the status message.
      */
     @FXML
     private void clearAllFields() {
@@ -398,7 +411,7 @@ public class MainController {
     }
 
     /**
-     * Показывает справочное окно с инструкцией по использованию приложения.
+     * Displays a help dialog with usage instructions.
      */
     @FXML
     private void showHelp() {
@@ -413,6 +426,11 @@ public class MainController {
         );
     }
 
+    /**
+     * Returns the alphabet based on the selected language.
+     *
+     * @return {@link RussianAlphabet} or {@link EnglishAlphabet}
+     */
     private Alphabet getSelectedAlphabet() {
         String selectedLang = languageComboBox.getSelectionModel().getSelectedItem();
         if ("Русский".equals(selectedLang)) {
@@ -422,6 +440,11 @@ public class MainController {
         }
     }
 
+    /**
+     * Returns the language profile for frequency analysis based on selection.
+     *
+     * @return {@link LanguageProfile} for Russian or English
+     */
     private LanguageProfile getSelectedProfile() {
         String selectedLang = languageComboBox.getSelectionModel().getSelectedItem();
         if ("Русский".equals(selectedLang)) {

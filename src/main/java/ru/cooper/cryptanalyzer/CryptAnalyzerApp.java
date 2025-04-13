@@ -12,11 +12,21 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Основной класс приложения "Криптоанализатор".
- * Запускает графический интерфейс пользователя (GUI) с использованием JavaFX.
+ * Entry point for the CryptAnalyzer application.
+ * <p>
+ * Launches the JavaFX-based graphical user interface (GUI)
+ * by loading the main view from FXML.
  */
 public class CryptAnalyzerApp extends Application {
 
+    /**
+     * Initializes and displays the primary stage of the application.
+     * <p>
+     * Loads the UI layout from {@code /main-view.fxml}, sets the window title,
+     * icon, and dimensions. Displays error alerts in case of failures.
+     *
+     * @param primaryStage the primary stage for this application
+     */
     @Override
     public void start(Stage primaryStage) {
         try {
@@ -42,9 +52,9 @@ public class CryptAnalyzerApp extends Application {
 
 
     /**
-     * Отображает всплывающее окно с сообщением об ошибке.
+     * Displays a modal alert dialog with an error message.
      *
-     * @param message Текст ошибки
+     * @param message the error message to display
      */
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -55,9 +65,9 @@ public class CryptAnalyzerApp extends Application {
     }
 
     /**
-     * Точка входа в приложение.
+     * Launches the application.
      *
-     * @param args Аргументы командной строки
+     * @param args command-line arguments
      */
     public static void main(String[] args) {
         launch(args);

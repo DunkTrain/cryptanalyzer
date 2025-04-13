@@ -7,8 +7,10 @@ import ru.cooper.cryptanalyzer.util.LanguageProfile;
 import java.util.Collections;
 
 /**
- * Фоновая задача для brute-force зашифрованного текста.
- * Использует {@link TextBruteForce} для автоматического подбора ключа шифрования.
+ * A background task that performs brute-force decryption of the given encrypted text.
+ * <p>
+ * Uses {@link TextBruteForce} to automatically guess the Caesar cipher key
+ * based on language profile heuristics.
  */
 public class BruteForceTask extends Task<TextBruteForce.BruteForceResult> {
 
@@ -16,9 +18,10 @@ public class BruteForceTask extends Task<TextBruteForce.BruteForceResult> {
     private final TextBruteForce bruteForce;
 
     /**
-     * Создаем задачу для взлома текста.
+     * Constructs a new brute-force decryption task.
      *
-     * @param text зашифрованный текст для анализа.
+     * @param text    the encrypted text to analyze
+     * @param profile the language profile used for frequency analysis
      */
     public BruteForceTask(String text, LanguageProfile profile) {
         this.text = text;

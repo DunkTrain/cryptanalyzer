@@ -42,11 +42,6 @@ public final class RussianAlphabet implements Alphabet {
     }
 
     @Override
-    public String getFullAlphabet() {
-        return FULL;
-    }
-
-    @Override
     public boolean contains(char symbol) {
         return getIndexOf(symbol) != -1;
     }
