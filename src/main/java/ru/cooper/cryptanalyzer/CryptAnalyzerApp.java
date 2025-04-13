@@ -17,28 +17,18 @@ import java.util.Objects;
  */
 public class CryptAnalyzerApp extends Application {
 
-    /**
-     * Метод запускает главное окно приложения.
-     *
-     * @param primaryStage Главная сцена JavaFX
-     */
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Загрузка главного окна из FXML-файла
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/main-view.fxml")));
 
-            // Установка заголовка окна
             primaryStage.setTitle("Криптоанализатор");
 
-            // Создание сцены с размерами 1000x800 пикселей
             primaryStage.setScene(new Scene(root, 1000, 800));
 
-            // Установка иконки приложения
             Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon.png")));
             primaryStage.getIcons().add(icon);
 
-            // Отображение главного окна
             primaryStage.show();
 
         } catch (IOException e) {
@@ -49,6 +39,7 @@ public class CryptAnalyzerApp extends Application {
             showErrorAlert("Произошла непредвиденная ошибка");
         }
     }
+
 
     /**
      * Отображает всплывающее окно с сообщением об ошибке.

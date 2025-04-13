@@ -2,7 +2,8 @@ package ru.cooper.cryptanalyzer.controllers.ui.tasks;
 
 import javafx.concurrent.Task;
 import ru.cooper.cryptanalyzer.core.TextEncoder;
-import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
+import ru.cooper.cryptanalyzer.domain.model.Alphabet;
+import ru.cooper.cryptanalyzer.domain.model.languages.RussianAlphabet;
 
 /**
  * Фоновая задача для шифрования текста методом Цезаря.
@@ -14,25 +15,32 @@ public class EncodeTask extends Task<String> {
     private final int key;
     private final TextEncoder textEncoder;
 
-    /**
-     * Создает задачу для шифрования.
-     *
-     * @param text исходный текст.
-     * @param key  ключ шифрования (должен быть от 1 до {@link CryptoAlphabet#LENGTH_ALPHABET}).
-     */
-    public EncodeTask(String text, int key) {
-        this.text = text;
-        this.key = key;
-        this.textEncoder = new TextEncoder();
-    }
+    private static final int MIN_LENGTH = 10;
+    private static final int MIN_WORDS = 2;
 
     /**
-     * Выполняет шифрование в фоновом потоке.
-     *
-     * @return зашифрованный текст.
+     * @param text  исходный текст.
+     * @param key   ключ шифрования
+     * @param alphabet алфавит для шифрования
      */
+    public EncodeTask(String text, int key, Alphabet alphabet) {
+        this.text = text;
+        this.key = key;
+        this.textEncoder = new TextEncoder(alphabet);
+    }
+
     @Override
     protected String call() {
+        String trimmed = text.trim();
+        if (trimmed.length() < MIN_LENGTH) {
+            throw new IllegalArgumentException("Текст должен содержать не менее " + MIN_LENGTH + " символов.");
+        }
+
+        String[] words = trimmed.split("\\s+");
+        if (words.length < MIN_WORDS) {
+            throw new IllegalArgumentException("Текст должен содержать хотя бы два слова.");
+        }
+
         StringBuilder encodedContent = new StringBuilder();
 
         for (String line : text.split("\n")) {

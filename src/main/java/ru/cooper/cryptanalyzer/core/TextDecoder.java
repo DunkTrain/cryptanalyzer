@@ -1,25 +1,29 @@
 package ru.cooper.cryptanalyzer.core;
 
-import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
+import ru.cooper.cryptanalyzer.domain.model.Alphabet;
 
 /**
- * Реализует алгоритм дешифрования текста, зашифрованного шифром Цезаря.
- * <p>
- * Обеспечивает:
- * <ul>
- *   <li>Дешифрование строки текста с заданным ключом</li>
- *   <li>Дешифрование отдельных символов</li>
- *   <li>Сохранение символов, не входящих в криптографический алфавит</li>
- * </ul>
+ * Utility class for decrypting Caesar cipher-encoded text using a given {@link Alphabet}.
  */
 public class TextDecoder {
 
+    private final Alphabet alphabet;
+
     /**
-     * Дешифрует текст с использованием указанного ключа.
+     * Constructs a {@code TextDecoder} for a specific alphabet.
      *
-     * @param ciphertext зашифрованный текст.
-     * @param key ключ дешифрования.
-     * @return расшифрованный текст.
+     * @param alphabet the alphabet to be used for decryption
+     */
+    public TextDecoder(Alphabet alphabet) {
+        this.alphabet = alphabet;
+    }
+
+    /**
+     * Decrypts the given ciphertext by shifting each character to the left by the specified key.
+     *
+     * @param ciphertext the encrypted text
+     * @param key        the Caesar cipher shift key
+     * @return the decrypted plain text
      */
     public String decrypt(String ciphertext, int key) {
         if (ciphertext == null || ciphertext.isEmpty()) {
@@ -36,20 +40,19 @@ public class TextDecoder {
     }
 
     /**
-     * Дешифрует символ со сдвигом влево
+     * Performs a left shift of a character within the alphabet.
+     * If the character is not part of the alphabet, it is returned unchanged.
      *
-     * @param symbol символ для дешифрования
-     * @param key ключ дешифрования (сдвиг)
-     * @return дешифрованный символ
+     * @param symbol the character to shift
+     * @param key    the number of positions to shift
+     * @return the shifted character
      */
     public char leftOffset(char symbol, int key) {
-        if (CryptoAlphabet.contains(symbol)) {
-            int alphabetIndex = CryptoAlphabet.getIndexOf(symbol);
-            int newIndex = (alphabetIndex + CryptoAlphabet.LENGTH_ALPHABET - key) % CryptoAlphabet.LENGTH_ALPHABET;
-
-            return CryptoAlphabet.getCharAt(newIndex);
-        } else {
-            return symbol;
+        if (alphabet.contains(symbol)) {
+            int index = alphabet.getIndexOf(symbol);
+            int newIndex = (index + alphabet.length() - key) % alphabet.length();
+            return alphabet.getCharAt(newIndex);
         }
+        return symbol;
     }
 }

@@ -2,6 +2,9 @@ package ru.cooper.cryptanalyzer.controllers.ui.tasks;
 
 import javafx.concurrent.Task;
 import ru.cooper.cryptanalyzer.core.TextBruteForce;
+import ru.cooper.cryptanalyzer.util.LanguageProfile;
+
+import java.util.Collections;
 
 /**
  * Фоновая задача для brute-force зашифрованного текста.
@@ -17,16 +20,12 @@ public class BruteForceTask extends Task<TextBruteForce.BruteForceResult> {
      *
      * @param text зашифрованный текст для анализа.
      */
-    public BruteForceTask(String text) {
+    public BruteForceTask(String text, LanguageProfile profile) {
         this.text = text;
-        this.bruteForce = new TextBruteForce();
+        this.bruteForce = new TextBruteForce(Collections.singletonList(profile));
     }
 
-    /**
-     * Запускает задачу для взлома текста.
-     *
-     * @return text зашифрованный текст для анализа.
-     */
+
     @Override
     protected TextBruteForce.BruteForceResult call() {
         return bruteForce.bruteForce(text);

@@ -26,11 +26,16 @@
     <TextArea fx:id="inputTextArea" styleClass="input-text-area"
               promptText="Введите текст..." VBox.vgrow="ALWAYS"/>
 
-    <!-- ========== ПАНЕЛЬ КЛЮЧА ========== -->
+    <!-- ========== ПАНЕЛЬ КЛЮЧА И ВЫБОРА ЯЗЫКА ========== -->
     <HBox spacing="10" alignment="CENTER_LEFT" styleClass="key-panel">
         <Label text="Ключ (число):" styleClass="key-label"/>
         <TextField fx:id="keyField" styleClass="key-field"
                    promptText="Введите ключ" HBox.hgrow="ALWAYS"/>
+
+        <!-- Новый блок: выбор языка -->
+        <Label text="Язык:" styleClass="key-label"/>
+        <ComboBox fx:id="languageComboBox" prefWidth="120"/>
+
         <Button text="📂 Выбрать файл" onAction="#selectInputFile" styleClass="file-button"/>
     </HBox>
 

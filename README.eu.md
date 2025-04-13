@@ -99,6 +99,6 @@ Brute-force algorithm
 
 3. Plausibility scoring based on:
 
-   - letter frequency
-   - dictionary matches
-   - sentence structure
+    - letter frequency
+    - dictionary matches
+    - sentence structure
