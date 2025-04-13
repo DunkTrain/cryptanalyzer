@@ -173,16 +173,6 @@ public final class LanguageDictionary {
     }
 
     /**
-     * Returns the full set of words in this dictionary.
-     * The returned set is unmodifiable.
-     *
-     * @return a set of words
-     */
-    public Set<String> getWords() {
-        return words;
-    }
-
-    /**
      * Adds an array of words to the provided set.
      *
      * @param set   the set to add words to

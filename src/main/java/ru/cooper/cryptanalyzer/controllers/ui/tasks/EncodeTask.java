@@ -3,11 +3,11 @@ package ru.cooper.cryptanalyzer.controllers.ui.tasks;
 import javafx.concurrent.Task;
 import ru.cooper.cryptanalyzer.core.TextEncoder;
 import ru.cooper.cryptanalyzer.domain.model.Alphabet;
-import ru.cooper.cryptanalyzer.domain.model.languages.RussianAlphabet;
 
 /**
- * Фоновая задача для шифрования текста методом Цезаря.
- * Шифрует текст построчно с указанным ключом через {@link TextEncoder}.
+ * A background task that performs encryption using the Caesar cipher.
+ * <p>
+ * Validates the input text and encrypts it line by line using {@link TextEncoder}.
  */
 public class EncodeTask extends Task<String> {
 
@@ -19,9 +19,11 @@ public class EncodeTask extends Task<String> {
     private static final int MIN_WORDS = 2;
 
     /**
-     * @param text  исходный текст.
-     * @param key   ключ шифрования
-     * @param alphabet алфавит для шифрования
+     * Constructs a new encryption task.
+     *
+     * @param text     the plain text to encrypt
+     * @param key      the Caesar cipher key
+     * @param alphabet the alphabet used for encryption
      */
     public EncodeTask(String text, int key, Alphabet alphabet) {
         this.text = text;

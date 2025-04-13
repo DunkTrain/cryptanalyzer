@@ -8,14 +8,6 @@ package ru.cooper.cryptanalyzer.domain.model;
 public interface Alphabet {
 
     /**
-     * Returns the full string representation of the alphabet, including all characters
-     * (e.g., letters, digits, punctuation).
-     *
-     * @return a string containing all characters in the alphabet
-     */
-    String getFullAlphabet();
-
-    /**
      * Checks if the given character exists in the alphabet.
      *
      * @param symbol the character to check

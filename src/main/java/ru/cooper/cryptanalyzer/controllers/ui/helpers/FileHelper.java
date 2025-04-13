@@ -8,19 +8,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 /**
- * Утилита для работы с файловой системой:
+ * A utility class for file system operations:
  * <ul>
- *   <li>Выбор файлов через диалоговые окна</li>
- *   <li>Чтение/запись текста в UTF-8</li>
+ *   <li>Selecting text files using a file chooser dialog</li>
+ *   <li>Reading and writing text files using UTF-8 encoding</li>
  * </ul>
  */
 public class FileHelper {
 
     /**
-     * Настраивает диалог выбора текстовых файлов (*.txt).
+     * Creates and configures a {@link FileChooser} for selecting text files (*.txt).
      *
-     * @param title заголовок окна
-     * @return настроенный FileChooser
+     * @param title the title of the file chooser dialog
+     * @return a configured {@code FileChooser} instance
      */
     public FileChooser createTextFileChooser(String title) {
         FileChooser fileChooser = new FileChooser();
@@ -33,22 +33,22 @@ public class FileHelper {
     }
 
     /**
-     * Читает текст из файла в кодировке UTF-8.
+     * Reads the contents of the given file using UTF-8 encoding.
      *
-     * @param file файл для чтения
-     * @return содержимое файла
-     * @throws IOException если файл не существует или недоступен
+     * @param file the file to read from
+     * @return the file content as a string
+     * @throws IOException if the file does not exist or cannot be read
      */
     public String readTextFromFile(File file) throws IOException {
         return Files.readString(file.toPath(), StandardCharsets.UTF_8);
     }
 
     /**
-     * Сохраняет текст в файл в кодировке UTF-8.
+     * Writes the given text content to the specified file using UTF-8 encoding.
      *
-     * @param content текст для сохранения
-     * @param file    целевой файл
-     * @throws IOException если файл не может быть создан или записан
+     * @param content the text content to write
+     * @param file    the target file
+     * @throws IOException if the file cannot be created or written to
      */
     public void saveTextToFile(String content, File file) throws IOException {
         Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
