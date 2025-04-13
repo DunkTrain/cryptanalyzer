@@ -4,8 +4,6 @@
 
 > 🇷🇺 [Read in Russian](README.ru.md)
 
----
-
 ## Features
 
 - 🔒 **Encryption** with a specified or random key.
@@ -14,14 +12,10 @@
 - 📂 **File support**: load input from and save output to a file.
 - 🌐 **Support for Russian alphabet**: Cyrillic letters, digits, and punctuation.
 
----
-
 ## Requirements
 
 - Java 21+
 - Maven
-
----
 
 ## Run the app
 
