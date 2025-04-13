@@ -3,6 +3,7 @@ package ru.cooper.cryptanalyzer.controllers.ui;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
@@ -15,7 +16,11 @@ import ru.cooper.cryptanalyzer.controllers.ui.tasks.DecodeTask;
 import ru.cooper.cryptanalyzer.controllers.ui.tasks.EncodeTask;
 import ru.cooper.cryptanalyzer.controllers.ui.validators.KeyValidator;
 import ru.cooper.cryptanalyzer.core.TextBruteForce;
-import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
+import ru.cooper.cryptanalyzer.domain.model.Alphabet;
+import ru.cooper.cryptanalyzer.domain.model.languages.EnglishAlphabet;
+import ru.cooper.cryptanalyzer.domain.model.languages.RussianAlphabet;
+import ru.cooper.cryptanalyzer.util.LanguageProfile;
+import ru.cooper.cryptanalyzer.util.LanguageProfiles;
 
 import java.io.File;
 import java.util.Random;
@@ -53,8 +58,11 @@ public class MainController {
     @FXML
     private ProgressBar progressBar;
 
+    @FXML
+    private ComboBox<String> languageComboBox;
+
     private static final Random RANDOM = new Random();
-    private static final int MAX_KEY_VALUE = CryptoAlphabet.LENGTH_ALPHABET - 1;
+    private static final int MAX_KEY_VALUE = RussianAlphabet.LENGTH - 1;
     private static final String KEY_RANGE_PROMPT = "Ключ от 1 до " + MAX_KEY_VALUE;
 
     private final KeyValidator keyValidator;
@@ -79,6 +87,8 @@ public class MainController {
     private void initialize() {
         setupUIComponents();
         setupEventHandlers();
+        languageComboBox.getItems().addAll("Русский", "English");
+        languageComboBox.getSelectionModel().selectFirst();
     }
 
     private void setupUIComponents() {
@@ -182,16 +192,11 @@ public class MainController {
                 return;
             }
 
-            EncodeTask encodeTask = new EncodeTask(inputText, key);
-            setupTaskHandlers(encodeTask, "Текст успешно зашифрован с ключом " + key, "Ошибка шифрования");
+            Alphabet selectedAlphabet = getSelectedAlphabet();
 
-            encodeTask.setOnSucceeded(event -> {
-                String encodedText = encodeTask.getValue();
-                outputTextArea.setText(encodedText);
-                keyField.setText(String.valueOf(key));
-                showStatus("Текст успешно зашифрован с ключом " + key, false);
-                resetControlsState();
-            });
+            EncodeTask encodeTask = new EncodeTask(inputText, key, selectedAlphabet);
+            setupTaskHandlers(encodeTask,
+                    "Текст успешно зашифрован с ключом " + key, "Ошибка шифрования");
 
             new Thread(encodeTask).start();
 
@@ -220,7 +225,9 @@ public class MainController {
                 return;
             }
 
-            DecodeTask decodeTask = new DecodeTask(inputText, key);
+            Alphabet selectedAlphabet = getSelectedAlphabet();
+
+            DecodeTask decodeTask = new DecodeTask(inputText, key, selectedAlphabet);
             setupTaskHandlers(decodeTask, "Текст успешно дешифрован с ключом " + key, "Ошибка дешифрования");
 
             new Thread(decodeTask).start();
@@ -249,7 +256,9 @@ public class MainController {
                 return;
             }
 
-            BruteForceTask bruteForceTask = new BruteForceTask(inputText);
+            LanguageProfile selectedProfile = getSelectedProfile();
+
+            BruteForceTask bruteForceTask = new BruteForceTask(inputText, selectedProfile);
 
             bruteForceTask.setOnSucceeded(event -> {
                 TextBruteForce.BruteForceResult result = bruteForceTask.getValue();
@@ -402,5 +411,23 @@ public class MainController {
                         "При шифровании можно оставить поле ключа пустым - будет сгенерирован случайный ключ.\n" +
                         "Для brute-force ключ указывать не требуется, приложение автоматически найдет наиболее вероятный ключ."
         );
+    }
+
+    private Alphabet getSelectedAlphabet() {
+        String selectedLang = languageComboBox.getSelectionModel().getSelectedItem();
+        if ("Русский".equals(selectedLang)) {
+            return RussianAlphabet.getInstance();
+        } else {
+            return EnglishAlphabet.getInstance();
+        }
+    }
+
+    private LanguageProfile getSelectedProfile() {
+        String selectedLang = languageComboBox.getSelectionModel().getSelectedItem();
+        if ("Русский".equals(selectedLang)) {
+            return LanguageProfiles.russianProfile();
+        } else {
+            return LanguageProfiles.englishProfile();
+        }
     }
 }

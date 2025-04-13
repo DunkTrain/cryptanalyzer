@@ -7,9 +7,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import ru.cooper.cryptanalyzer.util.UTF8Control;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 /**
  * Основной класс приложения "Криптоанализатор".
@@ -17,28 +20,31 @@ import java.util.Objects;
  */
 public class CryptAnalyzerApp extends Application {
 
-    /**
-     * Метод запускает главное окно приложения.
-     *
-     * @param primaryStage Главная сцена JavaFX
-     */
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Загрузка главного окна из FXML-файла
-            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/main-view.fxml")));
+            Locale locale = Locale.forLanguageTag("ru");
 
-            // Установка заголовка окна
-            primaryStage.setTitle("Криптоанализатор");
+            ResourceBundle bundle = ResourceBundle.getBundle(
+                    "i18n.Messages",
+                    locale,
+                    new UTF8Control()
+            );
 
-            // Создание сцены с размерами 1000x800 пикселей
+            FXMLLoader loader = new FXMLLoader(
+                    Objects.requireNonNull(getClass().getResource("/main-view.fxml")),
+                    bundle
+            );
+
+            Parent root = loader.load();
+
+            primaryStage.setTitle(bundle.getString("app.title"));
+
             primaryStage.setScene(new Scene(root, 1000, 800));
 
-            // Установка иконки приложения
             Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon.png")));
             primaryStage.getIcons().add(icon);
 
-            // Отображение главного окна
             primaryStage.show();
 
         } catch (IOException e) {
@@ -46,6 +52,7 @@ public class CryptAnalyzerApp extends Application {
             showErrorAlert("Не удалось загрузить интерфейс приложения");
         } catch (Exception e) {
             System.err.println("Неожиданная ошибка: " + e.getMessage());
+            e.printStackTrace();
             showErrorAlert("Произошла непредвиденная ошибка");
         }
     }

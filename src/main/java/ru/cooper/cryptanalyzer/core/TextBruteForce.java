@@ -1,17 +1,17 @@
 package ru.cooper.cryptanalyzer.core;
 
-import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
-import ru.cooper.cryptanalyzer.util.Dictionary;
+import ru.cooper.cryptanalyzer.util.LanguageDictionary;
+import ru.cooper.cryptanalyzer.util.LanguageProfile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * Реализует взлом шифра Цезаря методом полного перебора с анализом частотности символов,
- * структуры текста и совпадений со словарем.
+ * Performs brute-force decryption of a Caesar cipher by iterating over all possible keys
+ * and evaluating each result using a scoring system based on character frequency,
+ * textual structure, dictionary matches, and text length.
  */
 public class TextBruteForce {
 
@@ -20,88 +20,59 @@ public class TextBruteForce {
     private static final double FREQUENCY_WEIGHT = 10.0;
     private static final double DICTIONARY_WEIGHT = 7.0;
     private static final double LENGTH_WEIGHT = 2.0;
-    private static final double MIN_TEXT_LENGTH = 10;
 
-    /** Статистика частоты букв в русском языке. */
-    private final Map<Character, Double> russianLetterFrequency;
-
-    /** Регулярное выражение для проверки структуры осмысленного текста. */
-    private static final String MEANINGFUL_TEXT_REGEX = "^\\W*[а-яА-Я]+([\\s,.:;-]+[а-яА-Я]+)*";
-    private final Pattern meaningfulPattern;
-
-    /** Регулярное выражение для проверки наличия пробелов между словами. */
-    private static final String SPACES_PATTERN_REGEX = "\\b[а-яА-Я]{2,}\\s+[а-яА-Я]{2,}\\b";
-    private final Pattern spacesPattern;
-
-    private final TextDecoder textDecoder;
+    private final List<LanguageProfile> profiles;
 
     /**
-     * Конструктор по умолчанию.
-     */
-    public TextBruteForce() {
-        this(new TextDecoder());
-    }
-
-    /**
-     * Конструктор с внедрением зависимости TextDecoder.
+     * Constructs a new {@code TextBruteForce} instance with a list of language profiles.
      *
-     * @param textDecoder декодер текста
+     * @param profiles list of {@link LanguageProfile} objects to evaluate against
+     * @throws IllegalArgumentException if the list is null or empty
      */
-    public TextBruteForce(TextDecoder textDecoder) {
-        this.textDecoder = textDecoder;
-        this.russianLetterFrequency = createFrequencyMap();
-        this.meaningfulPattern = Pattern.compile(MEANINGFUL_TEXT_REGEX);
-        this.spacesPattern = Pattern.compile(SPACES_PATTERN_REGEX);
-    }
-
-    private Map<Character, Double> createFrequencyMap() {
-        Map<Character, Double> frequencyMap = new HashMap<>();
-        frequencyMap.put('о', 0.1097); frequencyMap.put('е', 0.0849);
-        frequencyMap.put('а', 0.0801); frequencyMap.put('и', 0.0735);
-        frequencyMap.put('н', 0.0669); frequencyMap.put('т', 0.0666);
-        frequencyMap.put('с', 0.0574); frequencyMap.put('р', 0.0545);
-        frequencyMap.put('в', 0.0473); frequencyMap.put('л', 0.0473);
-        frequencyMap.put('к', 0.0352); frequencyMap.put('м', 0.0321);
-        frequencyMap.put('д', 0.0249); frequencyMap.put('п', 0.0233);
-        frequencyMap.put('у', 0.0217); frequencyMap.put('я', 0.0201);
-        frequencyMap.put('г', 0.0170); frequencyMap.put('з', 0.0094);
-        frequencyMap.put('б', 0.0094); frequencyMap.put('ч', 0.0072);
-        frequencyMap.put('й', 0.0072); frequencyMap.put('ь', 0.0072);
-        frequencyMap.put('ю', 0.0072); frequencyMap.put('ш', 0.0049);
-        frequencyMap.put('щ', 0.0036); frequencyMap.put('ц', 0.0036);
-        frequencyMap.put('э', 0.0036); frequencyMap.put('ж', 0.0023);
-        frequencyMap.put('ф', 0.0023); frequencyMap.put('ъ', 0.0011);
-        frequencyMap.put('ё', 0.0011);
-        return frequencyMap;
+    public TextBruteForce(List<LanguageProfile> profiles) {
+        if (profiles == null || profiles.isEmpty()) {
+            throw new IllegalArgumentException("At least one LanguageProfile must be provided");
+        }
+        this.profiles = profiles;
     }
 
     /**
-     * Выполняет перебор всех возможных ключей для расшифровки текста.
+     * Attempts to decrypt the given Caesar-encrypted text by testing all possible keys
+     * and evaluating the likelihood of the correct decryption using multiple scoring criteria.
      *
-     * @param encryptedText зашифрованный текст
-     * @return результат с наилучшим вариантом расшифровки
+     * @param encryptedText the encrypted input string
+     * @return a {@link BruteForceResult} containing the best decryption attempt
      */
     public BruteForceResult bruteForce(String encryptedText) {
         if (encryptedText == null || encryptedText.isEmpty()) {
-            return new BruteForceResult("", 0, 0.0);
-        }
-
-        if (encryptedText.length() < MIN_TEXT_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Текст слишком короткий для надежного взлома. Минимальная длина: " + MIN_TEXT_LENGTH
-            );
+            return new BruteForceResult("", 0, 0.0, "Input text is null or empty");
         }
 
         BruteForceResult bestResult = new BruteForceResult();
         double bestScore = Double.NEGATIVE_INFINITY;
 
-        for (int key = 0; key < CryptoAlphabet.LENGTH_ALPHABET; key++) {
-            String decryptedText = textDecoder.decrypt(encryptedText, key);
-            double score = calculateTextQuality(decryptedText);
+        for (LanguageProfile profile : profiles) {
 
-            if (score > bestScore) {
-                bestScore = score;
-                bestResult = new BruteForceResult(decryptedText, key, score);
+            if (encryptedText.length() < profile.getMinTextLength()) {
+                continue;
+            }
+
+            TextDecoder decoder = new TextDecoder(profile.getAlphabet());
+            int alphabetLength = profile.getAlphabet().length();
+
+            for (int key = 0; key < alphabetLength; key++) {
+                String decryptedText = decoder.decrypt(encryptedText, key);
+                double score = calculateTextQuality(decryptedText, profile);
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestResult = new BruteForceResult(
+                            decryptedText,
+                            key,
+                            score,
+                            String.format("Language: %s", profile.getAlphabet().getClass().getSimpleName())
+                    );
+                }
             }
         }
 
@@ -110,95 +81,105 @@ public class TextBruteForce {
                     bestResult.getDecryptedText(),
                     bestResult.getKey(),
                     bestResult.getConfidenceScore(),
-                    "Низкая уверенность в результате. Возможно, текст зашифрован другим методом или содержит нестандартные символы."
+                    bestResult.getMessage() + " | Low confidence in the result."
             );
         }
 
         return bestResult;
     }
 
-    /**
-     * Вычисляет комплексную оценку качества расшифрованного текста.
-     *
-     * @param text текст для оценки
-     * @return числовая оценка качества (чем выше, тем лучше)
-     */
-    private double calculateTextQuality(String text) {
-        String trimmedText = text.trim();
 
-        if (trimmedText.length() < MIN_TEXT_LENGTH) {
+    /**
+     * Calculates a quality score for a decrypted text based on structural patterns,
+     * letter frequencies, dictionary word matches, and length heuristics.
+     *
+     * @param text    the decrypted text to evaluate
+     * @param profile the language profile used for scoring
+     * @return a numeric score representing the likelihood of correct decryption
+     */
+    private double calculateTextQuality(String text, LanguageProfile profile) {
+        String trimmedText = text.trim();
+        if (trimmedText.length() < profile.getMinTextLength()) {
             return 0.0;
         }
 
-        Matcher matcher = meaningfulPattern.matcher(trimmedText);
-        double structureScore = matcher.matches() ? STRUCTURE_WEIGHT : 0.0;
+        Matcher meaningfulMatcher = profile.getMeaningfulPattern().matcher(trimmedText);
+        double structureScore = meaningfulMatcher.matches() ? STRUCTURE_WEIGHT : 0.0;
 
-        Matcher spacesMatcher = spacesPattern.matcher(trimmedText);
+        Matcher spacesMatcher = profile.getSpacesPattern().matcher(trimmedText);
         if (spacesMatcher.find()) {
             structureScore += 1.0;
         }
 
-        double frequencyScore = analyzeLetterFrequency(trimmedText);
-        double dictionaryScore = analyzeDictionaryMatch(trimmedText);
+        double frequencyScore = analyzeLetterFrequency(trimmedText, profile);
 
-        int russianLetterCount = trimmedText.replaceAll("[^а-яА-Я]", "").length();
-        double lengthScore = Math.min(russianLetterCount / 20.0, 5.0) * LENGTH_WEIGHT;
+        double dictionaryScore = analyzeDictionaryMatch(trimmedText, profile.getDictionary());
+
+        int letterCount = 0;
+        for (char c : trimmedText.toCharArray()) {
+            if (profile.getAlphabet().contains(c)) {
+                letterCount++;
+            }
+        }
+
+        double lengthScore = Math.min(letterCount / 20.0, 5.0) * LENGTH_WEIGHT;
 
         return structureScore + frequencyScore + dictionaryScore + lengthScore;
     }
 
     /**
-     * Анализирует соответствие частот букв эталонным значениям.
+     * Evaluates how closely the letter frequency of the text matches the expected frequency
+     * from the language profile.
      *
-     * @param text текст для анализа
-     * @return оценка соответствия частот (0.0 - 1.0)
+     * @param text    the decrypted text
+     * @param profile the language profile containing expected frequencies
+     * @return a score based on frequency similarity
      */
-    private double analyzeLetterFrequency(String text) {
+    private double analyzeLetterFrequency(String text, LanguageProfile profile) {
         Map<Character, Integer> letterCount = new HashMap<>();
         int totalLetters = 0;
 
         for (char c : text.toLowerCase().toCharArray()) {
-            if (Character.isLetter(c) && CryptoAlphabet.LETTERS_LOWER_CASE.indexOf(c) != -1) {
+            if (profile.getAlphabet().contains(c)) {
                 letterCount.put(c, letterCount.getOrDefault(c, 0) + 1);
                 totalLetters++;
             }
         }
 
-        if (totalLetters == 0) return 0.0;
+        if (totalLetters == 0) {
+            return 0.0;
+        }
 
-        int finalTotalLetters = totalLetters;
-        double frequencyScore = russianLetterFrequency.entrySet().stream()
-                .mapToDouble(entry -> {
-                    double expected = entry.getValue();
-                    double actual = letterCount.getOrDefault(entry.getKey(), 0) / (double) finalTotalLetters;
-                    return 1.0 - Math.abs(expected - actual);
-                })
-                .sum() * FREQUENCY_MULTIPLIER;
+        double sumScore = 0.0;
+        for (Map.Entry<Character, Double> entry : profile.getLetterFrequency().entrySet()) {
+            char letter = entry.getKey();
+            double expected = entry.getValue();
+            double actual = letterCount.getOrDefault(letter, 0) / (double) totalLetters;
+            sumScore += (1.0 - Math.abs(expected - actual));
+        }
 
+        double frequencyScore = sumScore * FREQUENCY_MULTIPLIER;
         return frequencyScore * FREQUENCY_WEIGHT / FREQUENCY_MULTIPLIER;
     }
 
     /**
-     * Оценивает процент совпадения слов текста со словарем.
+     * Evaluates the percentage of known words in the text that match entries
+     * in the provided language dictionary.
      *
-     * @param text текст для анализа
-     * @return оценка от 0.0 до DICTIONARY_WEIGHT
+     * @param text      the decrypted text
+     * @param dictionary the {@link LanguageDictionary} containing known words
+     * @return a score based on dictionary match ratio
      */
-    private double analyzeDictionaryMatch(String text) {
-        String cleanText = text.replaceAll("[^а-яА-Я\\s]", "").toLowerCase().trim();
+    private double analyzeDictionaryMatch(String text, LanguageDictionary dictionary) {
+        String cleanText = text.replaceAll("[^\\p{L}\\s]", "").toLowerCase().trim();
         String[] words = cleanText.split("\\s+");
-
-        if (words.length == 0) return 0.0;
+        if (words.length == 0) {
+            return 0.0;
+        }
 
         int matches = 0;
-        Set<String> shortWords = Set.of(
-                "я", "ты", "он", "мы", "вы", "и", "а", "но", "в", "на", "с", "по", "за", "из", "от", "до", "да", "нет"
-        );
-
         for (String word : words) {
-            if (word.length() > 2 && Dictionary.COMMON_RUSSIAN_WORDS.contains(word)) {
-                matches++;
-            } else if (word.length() <= 2 && shortWords.contains(word)) {
+            if (dictionary.contains(word)) {
                 matches++;
             }
         }
@@ -208,7 +189,7 @@ public class TextBruteForce {
     }
 
     /**
-     * Содержит результаты расшифровки методом brute-force.
+     * Represents the result of the Caesar cipher brute-force attack.
      */
     public static class BruteForceResult {
 
@@ -217,15 +198,21 @@ public class TextBruteForce {
         private final double confidenceScore;
         private final String message;
 
-        /** Создает пустой результат. */
+        /**
+         * Default constructor with empty result.
+         */
         public BruteForceResult() {
-            this("", 0, 0.0);
+            this("", 0, 0.0, "");
         }
 
-        public BruteForceResult(String decryptedText, int key, double confidenceScore) {
-            this(decryptedText, key, confidenceScore, "");
-        }
-
+        /**
+         * Constructs a new result with the given parameters.
+         *
+         * @param decryptedText   the decrypted text
+         * @param key             the decryption key used
+         * @param confidenceScore score indicating decryption confidence
+         * @param message         additional info or explanation
+         */
         public BruteForceResult(String decryptedText, int key, double confidenceScore, String message) {
             this.decryptedText = decryptedText;
             this.key = key;
@@ -249,16 +236,23 @@ public class TextBruteForce {
             return message;
         }
 
+        /**
+         * Checks if the result contains a non-empty message.
+         *
+         * @return true if a message is present
+         */
         public boolean hasMessage() {
             return message != null && !message.isEmpty();
         }
 
         @Override
         public String toString() {
-            String result = String.format("Расшифрованный текст (ключ %d, уверенность %.2f%%): %s",
-                    key, confidenceScore * 10, decryptedText);
+            String result = String.format(
+                    "Decrypted text (key %d, confidence %.2f%%): %s",
+                    key, confidenceScore * 10, decryptedText
+            );
             if (hasMessage()) {
-                result += "\nСообщение: " + message;
+                result += "\nMessage: " + message;
             }
             return result;
         }

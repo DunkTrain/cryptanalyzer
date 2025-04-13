@@ -1,28 +1,29 @@
 package ru.cooper.cryptanalyzer.core;
 
-import static ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet.ALPHABET;
-import static ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet.LENGTH_ALPHABET;
+import ru.cooper.cryptanalyzer.domain.model.Alphabet;
 
 /**
- * Реализует алгоритм шифрования текста с использованием шифра Цезаря.
- * <p>
- * Обеспечивает:
- * <ui>
- *     <li>Шифрование строки текста с заданным ключом</li>
- *     <li>Шифрование отдельных символов</li>
- *     <li>Сохранение символов, не входящих в криптографический алфавит</li>
- * </ui>
- *
- * <p>Все методы класса статические - экземпляры не создаются</p>
+ * Utility class for encrypting text using the Caesar cipher method with a given {@link Alphabet}.
  */
 public class TextEncoder {
 
+    private final Alphabet alphabet;
+
     /**
-     * Шифрует текст с использованием указанного ключа.
+     * Constructs a {@code TextEncoder} for a specific alphabet.
      *
-     * @param inputText исходный текст.
-     * @param encryptionKey ключ шифрования.
-     * @return зашифрованный текст.
+     * @param alphabet the alphabet to be used for encryption
+     */
+    public TextEncoder(Alphabet alphabet) {
+        this.alphabet = alphabet;
+    }
+
+    /**
+     * Encrypts the given input text using the Caesar cipher with the provided key.
+     *
+     * @param inputText     the plain text to encrypt
+     * @param encryptionKey the Caesar cipher shift key
+     * @return the encrypted text
      */
     public String encodeText(String inputText, int encryptionKey) {
         if (inputText == null || inputText.isEmpty()) {
@@ -39,17 +40,21 @@ public class TextEncoder {
     }
 
     /**
-     * Шифрует символ со сдвигом вправо.
+     * Performs a right shift of a character within the alphabet.
+     * If the character is not part of the alphabet, it is returned unchanged.
      *
-     * @param symbol символ для шифрования
-     * @param key ключ шифрования (величина сдвига)
-     * @return зашифрованный символ
+     * @param symbol the character to shift
+     * @param key    the number of positions to shift
+     * @return the shifted character
      */
     public char encryptCharRight(char symbol, int key) {
-        if (ALPHABET.indexOf(symbol) != -1) {
-            return ALPHABET.charAt((ALPHABET.indexOf(symbol) + key) % LENGTH_ALPHABET);
-        } else {
-            return symbol;
+        if (alphabet.contains(symbol)) {
+            int index = alphabet.getIndexOf(symbol);
+            int newIndex = (index + key) % alphabet.length();
+
+            return alphabet.getCharAt(newIndex);
         }
+
+        return symbol;
     }
 }

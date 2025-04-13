@@ -2,7 +2,8 @@ package ru.cooper.cryptanalyzer.controllers.ui.tasks;
 
 import javafx.concurrent.Task;
 import ru.cooper.cryptanalyzer.core.TextEncoder;
-import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
+import ru.cooper.cryptanalyzer.domain.model.Alphabet;
+import ru.cooper.cryptanalyzer.domain.model.languages.RussianAlphabet;
 
 /**
  * Фоновая задача для шифрования текста методом Цезаря.
@@ -15,22 +16,16 @@ public class EncodeTask extends Task<String> {
     private final TextEncoder textEncoder;
 
     /**
-     * Создает задачу для шифрования.
-     *
-     * @param text исходный текст.
-     * @param key  ключ шифрования (должен быть от 1 до {@link CryptoAlphabet#LENGTH_ALPHABET}).
+     * @param text  исходный текст.
+     * @param key   ключ шифрования
+     * @param alphabet алфавит для шифрования
      */
-    public EncodeTask(String text, int key) {
+    public EncodeTask(String text, int key, Alphabet alphabet) {
         this.text = text;
         this.key = key;
-        this.textEncoder = new TextEncoder();
+        this.textEncoder = new TextEncoder(alphabet);
     }
 
-    /**
-     * Выполняет шифрование в фоновом потоке.
-     *
-     * @return зашифрованный текст.
-     */
     @Override
     protected String call() {
         StringBuilder encodedContent = new StringBuilder();

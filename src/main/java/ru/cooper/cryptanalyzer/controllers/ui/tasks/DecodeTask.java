@@ -2,7 +2,8 @@ package ru.cooper.cryptanalyzer.controllers.ui.tasks;
 
 import javafx.concurrent.Task;
 import ru.cooper.cryptanalyzer.core.TextDecoder;
-import ru.cooper.cryptanalyzer.domain.model.CryptoAlphabet;
+import ru.cooper.cryptanalyzer.domain.model.Alphabet;
+import ru.cooper.cryptanalyzer.domain.model.languages.RussianAlphabet;
 
 /**
  * Фоновая задача для дешифрования текст методом Цезаря.
@@ -18,19 +19,14 @@ public class DecodeTask extends Task<String> {
      * Создает задачу для дешифрования.
      *
      * @param text зашифрованный текст.
-     * @param key  ключ дешифрования (должен быть от 1 до {@link CryptoAlphabet#LENGTH_ALPHABET}
+     * @param key  ключ дешифрования (должен быть от 1 до {@link RussianAlphabet#LENGTH}
      */
-    public DecodeTask(String text, int key) {
+    public DecodeTask(String text, int key, Alphabet alphabet) {
         this.text = text;
         this.key = key;
-        this.decoder = new TextDecoder();
+        this.decoder = new TextDecoder(alphabet);
     }
 
-    /**
-     * Выполняет дешифрование в фоновом потоке.
-     *
-     * @return расшифрованный текст.
-     */
     @Override
     protected String call() {
         StringBuilder decodedContent = new StringBuilder();
