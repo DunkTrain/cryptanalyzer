@@ -21,7 +21,7 @@
 
 #### Вариант 1: Готовая сборка
 
-- Скачайте последний релиз приложения из раздела [Release](https://github.com/DunkTrain/cryptanalyzer/releases/tag/v2.1.0).
+- Скачайте последний релиз приложения из раздела [Release](https://github.com/DunkTrain/cryptanalyzer/releases/tag/v.2.2.1).
 - Запустите приложение, следуя инструкциям в релизе.
 
 #### Вариант 2: Сборка из исходников
@@ -45,7 +45,7 @@
 4. Запустите приложение:
 
 ```bash
-  java -jar target/cryptanalyzer-2.0.0.jar
+  java -jar target/cryptanalyzer-2.2.1.jar
 ```
 
 #### Вариант 3: Запуск через Maven
